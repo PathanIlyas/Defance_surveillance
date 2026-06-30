@@ -1,0 +1,260 @@
+/* ============================================
+   STYLE.CSS - Base / Global Styles
+   ============================================ */
+
+:root {
+  --bg-main:       #0f172a;
+  --bg-sidebar:    #111827;
+  --bg-card:       #1e293b;
+  --bg-card-hover: #243147;
+  --primary:       #00ff9d;
+  --primary-dim:   rgba(0,255,157,0.15);
+  --danger:        #ff4d4d;
+  --warning:       #fbbf24;
+  --info:          #38bdf8;
+  --text:          #ffffff;
+  --text-secondary:#94a3b8;
+  --border:        rgba(255,255,255,0.07);
+  --sidebar-width: 260px;
+  --topbar-height: 64px;
+  --radius:        12px;
+  --glass-bg:      rgba(30,41,59,0.7);
+  --glass-border:  rgba(0,255,157,0.15);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg-main);
+  color: var(--text);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-sidebar); }
+::-webkit-scrollbar-thumb { background: rgba(0,255,157,0.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,255,157,0.6); }
+
+/* ---- Typography ---- */
+h1,h2,h3,h4,h5,h6 { color: var(--text); font-weight: 600; }
+p { color: var(--text-secondary); }
+a { text-decoration: none; color: inherit; }
+
+.text-primary-custom { color: var(--primary) !important; }
+.text-danger-custom  { color: var(--danger)  !important; }
+.text-warn           { color: var(--warning) !important; }
+.text-info-custom    { color: var(--info)    !important; }
+.text-muted-custom   { color: var(--text-secondary) !important; }
+
+/* ---- Glass Card ---- */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+}
+
+/* ---- Military Card ---- */
+.mil-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: border-color 0.3s ease;
+}
+.mil-card:hover { border-color: rgba(0,255,157,0.25); }
+
+/* ---- Section Title ---- */
+.section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(0,255,157,0.3), transparent);
+}
+
+/* ---- Badge ---- */
+.mil-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+.mil-badge.green  { background: rgba(0,255,157,0.15); color: var(--primary); border: 1px solid rgba(0,255,157,0.3); }
+.mil-badge.red    { background: rgba(255,77,77,0.15);  color: var(--danger);  border: 1px solid rgba(255,77,77,0.3); }
+.mil-badge.yellow { background: rgba(251,191,36,0.15); color: var(--warning); border: 1px solid rgba(251,191,36,0.3); }
+.mil-badge.blue   { background: rgba(56,189,248,0.15); color: var(--info);    border: 1px solid rgba(56,189,248,0.3); }
+
+/* ---- Divider ---- */
+.mil-divider {
+  border: none;
+  height: 1px;
+  background: var(--border);
+  margin: 0;
+}
+
+/* ---- Tables ---- */
+.mil-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.mil-table thead tr {
+  border-bottom: 1px solid rgba(0,255,157,0.2);
+}
+.mil-table th {
+  padding: 10px 12px;
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.mil-table td {
+  padding: 10px 12px;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.mil-table tbody tr { transition: background 0.2s ease; }
+.mil-table tbody tr:hover { background: rgba(0,255,157,0.04); }
+
+/* ---- Progress Bar ---- */
+.mil-progress {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.08);
+  overflow: hidden;
+}
+.mil-progress-bar {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--primary), #00c97a);
+  transition: width 1.2s ease;
+}
+.mil-progress-bar.danger  { background: linear-gradient(90deg, #ff4d4d, #c0392b); }
+.mil-progress-bar.warning { background: linear-gradient(90deg, #fbbf24, #d97706); }
+
+/* ---- Buttons ---- */
+.btn-mil {
+  background: transparent;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  padding: 7px 18px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.25s, box-shadow 0.25s;
+}
+.btn-mil:hover {
+  background: var(--primary-dim);
+  box-shadow: 0 0 14px rgba(0,255,157,0.3);
+  color: var(--primary);
+}
+.btn-mil-filled {
+  background: var(--primary);
+  border: none;
+  color: #0f172a;
+  padding: 7px 18px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.25s, box-shadow 0.25s;
+}
+.btn-mil-filled:hover { opacity: 0.88; box-shadow: 0 0 14px rgba(0,255,157,0.5); }
+
+/* ---- Input / Search ---- */
+.mil-input {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  transition: border-color 0.25s;
+  outline: none;
+  width: 100%;
+}
+.mil-input:focus { border-color: rgba(0,255,157,0.45); }
+.mil-input::placeholder { color: var(--text-secondary); }
+
+/* ---- Icon Box ---- */
+.icon-box {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.icon-box.green  { background: rgba(0,255,157,0.12); color: var(--primary); }
+.icon-box.red    { background: rgba(255,77,77,0.12);  color: var(--danger); }
+.icon-box.yellow { background: rgba(251,191,36,0.12); color: var(--warning); }
+.icon-box.blue   { background: rgba(56,189,248,0.12); color: var(--info); }
+.icon-box.purple { background: rgba(167,139,250,0.12); color: #a78bfa; }
+
+/* ---- Utility ---- */
+.gap-xs { gap: 6px; }
+.fw-600 { font-weight: 600; }
+.fw-700 { font-weight: 700; }
+.fs-xs  { font-size: 0.72rem; }
+.fs-sm  { font-size: 0.82rem; }
+.lh-1   { line-height: 1; }
+
+/* ---- Loading overlay ---- */
+#loading-overlay {
+  position: fixed; inset: 0;
+  background: var(--bg-main);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.5s ease;
+}
+#loading-overlay .logo-text {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 4px;
+  color: var(--primary);
+  margin-top: 24px;
+  text-transform: uppercase;
+}
+#loading-overlay .sub-text {
+  font-size: 0.72rem;
+  letter-spacing: 6px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  text-transform: uppercase;
+}
+
+/* ---- Emergency modal overlay ---- */
+#emergency-overlay {
+  position: fixed; inset: 0;
+  background: rgba(255,77,77,0.12);
+  backdrop-filter: blur(4px);
+  z-index: 8000;
+  display: none;
+  align-items: center; justify-content: center;
+}
+#emergency-overlay.active { display: flex; animation: fadeIn 0.3s ease; }

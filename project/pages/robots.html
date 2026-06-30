@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Robot Fleet | MilSurv Command Center</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css"/>
+<link rel="stylesheet" href="../css/style.css"/>
+<link rel="stylesheet" href="../css/animation.css"/>
+<link rel="stylesheet" href="../css/dashboard.css"/>
+<link rel="stylesheet" href="../css/responsive.css"/>
+</head>
+<body class="page-transition">
+<div id="loading-overlay">
+  <div class="military-spinner"></div>
+  <div class="logo-text">MILSURV</div>
+  <div class="sub-text">Loading Robot Fleet...</div>
+</div>
+<div id="sidebar-backdrop"></div>
+<div id="emergency-overlay">
+  <div class="emergency-modal">
+    <i class="fa-solid fa-radiation fa-2x text-danger-custom mb-3 blink-alert"></i>
+    <h2>EMERGENCY PROTOCOL</h2>
+    <p style="color:#ff8888">All units stand by. Emergency response activated.</p>
+    <div class="d-flex gap-3 justify-content-center">
+      <button class="btn-mil-filled" style="background:#ff4d4d">ACTIVATE</button>
+      <button class="btn-mil" id="emergency-close">STAND DOWN</button>
+    </div>
+  </div>
+</div>
+<div id="toast-container"></div>
+
+<!-- Sidebar -->
+<nav id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-logo">
+      <div class="brand-icon rotate-icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <div>
+        <div class="brand-name">MilSurv</div>
+        <div class="brand-sub">Command Center</div>
+      </div>
+    </div>
+  </div>
+  <div class="sidebar-section-label">Main</div>
+  <a href="../index.html" class="nav-item-mil"><span class="nav-icon"><i class="fa-solid fa-gauge-high"></i></span> Dashboard</a>
+  <a href="surveillance.html" class="nav-item-mil"><span class="nav-icon"><i class="fa-solid fa-video"></i></span> Live Surveillance</a>
+  <a href="robots.html" class="nav-item-mil active"><span class="nav-icon"><i class="fa-solid fa-robot"></i></span> Robot Fleet<span class="nav-badge">32</span></a>
+  <div class="sidebar-section-label">Operations</div>
+  <a href="#" class="nav-item-mil"><span class="nav-icon"><i class="fa-solid fa-crosshairs"></i></span> Mission Control</a>
+  <a href="#" class="nav-item-mil"><span class="nav-icon"><i class="fa-solid fa-brain"></i></span> AI Detection</a>
+  <a href="#" class="nav-item-mil"><span class="nav-icon"><i class="fa-solid fa-wave-square"></i></span> Sensor Monitoring</a>
+  <a href="#" class="nav-item-mil"><span class="nav-icon"><i class="fa-solid fa-location-dot"></i></span> GPS Tracking</a>
+  <a href="#" class="nav-item-mil"><span class="nav-icon"><i class="fa-solid fa-tower-broadcast"></i></span> Communication</a>
+  <div class="sidebar-section-label">Reports</div>
+  <a href="alerts.html" class="nav-item-mil"><span class="nav-icon"><i class="fa-solid fa-bell"></i></span> Alerts<span class="nav-badge">7</span></a>
+  <a href="reports.html" class="nav-item-mil"><span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span> Reports</a>
+  <a href="settings.html" class="nav-item-mil"><span class="nav-icon"><i class="fa-solid fa-gear"></i></span> Settings</a>
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="user-avatar">CM</div>
+      <div><div class="user-name">Col. Marcus</div><div class="user-role">Supreme Commander</div></div>
+    </div>
+  </div>
+</nav>
+
+<!-- Topbar -->
+<header id="topbar">
+  <button class="topbar-menu-btn" id="menu-toggle"><i class="fa-solid fa-bars"></i></button>
+  <div class="search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input type="text" placeholder="Search robots..."/></div>
+  <div id="realtime-clock" class="topbar-clock"></div>
+  <div class="topbar-actions">
+    <div class="robot-status-pill"><span class="status-dot online"></span> 18 Active Units</div>
+    <button class="topbar-btn" id="notif-btn"><i class="fa-solid fa-bell"></i><span class="notif-dot"></span></button>
+    <button class="topbar-btn" id="darkmode-btn"><i class="fa-solid fa-moon"></i></button>
+    <div class="user-pill"><div class="avatar">CM</div><span class="uname">Col. Marcus</span></div>
+    <button class="btn-emergency-top" data-emergency><i class="fa-solid fa-radiation"></i><span>EMERGENCY</span></button>
+  </div>
+</header>
+
+<div id="main-wrapper">
+<main id="main-content">
+
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3" data-aos="fade-down">
+  <div>
+    <h4 class="mb-1 fw-700"><i class="fa-solid fa-robot me-2" style="color:var(--primary)"></i>ROBOT FLEET</h4>
+    <p class="fs-xs mb-0" style="letter-spacing:2px;text-transform:uppercase"><span class="status-dot online me-2"></span>32 Units Registered &bull; 18 Deployed</p>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <button class="btn-mil" onclick="MilToast.show('Recall Initiated','All units returning to base','warning')"><i class="fa-solid fa-arrow-rotate-left me-1"></i>Recall All</button>
+    <button class="btn-mil-filled" onclick="MilToast.show('Deploy Order','All standby units deployed','success')"><i class="fa-solid fa-paper-plane me-1"></i>Deploy All</button>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="0"><div class="stat-card float-card"><div class="top-row"><span class="stat-label">Total Fleet</span><div class="icon-box blue"><i class="fa-solid fa-robot"></i></div></div><div class="stat-value" data-counter data-target="32">0</div></div></div>
+  <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="60"><div class="stat-card float-card"><div class="top-row"><span class="stat-label">Deployed</span><div class="icon-box green"><i class="fa-solid fa-circle-play"></i></div></div><div class="stat-value" style="color:var(--primary)" data-counter data-target="18">0</div></div></div>
+  <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="120"><div class="stat-card float-card warning"><div class="top-row"><span class="stat-label">Standby</span><div class="icon-box yellow"><i class="fa-solid fa-pause"></i></div></div><div class="stat-value" style="color:var(--warning)" data-counter data-target="10">0</div></div></div>
+  <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="180"><div class="stat-card float-card danger"><div class="top-row"><span class="stat-label">Offline</span><div class="icon-box red"><i class="fa-solid fa-power-off"></i></div></div><div class="stat-value" style="color:var(--danger)" data-counter data-target="4">0</div></div></div>
+</div>
+
+<!-- Robot Grid Cards -->
+<div class="section-title mb-3" data-aos="fade-up"><i class="fa-solid fa-th me-2"></i>Fleet Overview</div>
+<div class="row g-3 mb-4">
+
+  <!-- Robot cards (8 units) -->
+  <script>
+    const robots = [
+      { id:'R-01', model:'TALON-X2',     status:'online',  batt:87, mission:'MSN-001', gps:'Lock',  lat:'34.0521', lng:'118.2436' },
+      { id:'R-03', model:'RECON-9',      status:'online',  batt:62, mission:'MSN-004', gps:'Lock',  lat:'34.0612', lng:'118.2580' },
+      { id:'R-05', model:'SENTINEL-V',   status:'online',  batt:41, mission:'MSN-004', gps:'Lock',  lat:'34.0499', lng:'118.2390' },
+      { id:'R-07', model:'TALON-X3',     status:'warning', batt:73, mission:'TH-001',  gps:'Lock',  lat:'34.0705', lng:'118.2601' },
+      { id:'R-09', model:'VIPER-12',     status:'online',  batt:95, mission:'MSN-002', gps:'Lock',  lat:'34.0445', lng:'118.2345' },
+      { id:'R-12', model:'SENTINEL-III', status:'standby', batt:88, mission:'—',       gps:'Weak',  lat:'34.0588', lng:'118.2500' },
+      { id:'R-14', model:'RECON-7',      status:'standby', batt:18, mission:'Charge',  gps:'Lost',  lat:'—',       lng:'—' },
+      { id:'R-22', model:'TALON-X1',     status:'offline', batt:0,  mission:'—',       gps:'Lost',  lat:'—',       lng:'—' },
+    ];
+    const statusMap = { online:'green', warning:'yellow', standby:'yellow', offline:'red' };
+    const badgeMap  = { online:'green',  warning:'red',    standby:'yellow', offline:'red' };
+    const labelMap  = { online:'ACTIVE', warning:'ALERT',  standby:'STANDBY',offline:'OFFLINE' };
+    document.write(robots.map(r => `
+      <div class="col-sm-6 col-lg-3" data-aos="fade-up">
+        <div class="section-card float-card h-100">
+          <div class="card-header-mil" style="padding:12px 16px">
+            <span class="title" style="font-size:0.82rem"><i class="fa-solid fa-robot"></i> ${r.id}</span>
+            <span class="mil-badge ${badgeMap[r.status]}">${labelMap[r.status]}</span>
+          </div>
+          <div class="card-body-mil">
+            <div class="fs-xs text-muted-custom mb-2">${r.model}</div>
+            <div class="d-flex justify-content-between mb-3">
+              <div class="text-center"><div class="fs-xs text-muted-custom">Battery</div><div class="fw-700" style="color:${r.batt>50?'var(--primary)':r.batt>25?'var(--warning)':'var(--danger)'}">${r.batt}%</div></div>
+              <div class="text-center"><div class="fs-xs text-muted-custom">GPS</div><div class="fw-700 fs-xs" style="color:${r.gps==='Lock'?'var(--primary)':r.gps==='Weak'?'var(--warning)':'var(--danger)'}">${r.gps}</div></div>
+              <div class="text-center"><div class="fs-xs text-muted-custom">Mission</div><div class="fw-700 fs-xs" style="color:var(--text)">${r.mission}</div></div>
+            </div>
+            <div class="mil-progress mb-3"><div class="mil-progress-bar${r.batt<=25?' danger':r.batt<=50?' warning':''}" data-progress="${r.batt}" style="width:0%"></div></div>
+            <div class="d-flex gap-2">
+              <button class="btn-mil flex-fill" style="font-size:0.65rem;padding:5px" onclick="MilToast.show('${r.id} Status','Detailed telemetry loaded','info')"><i class="fa-solid fa-satellite me-1"></i>Track</button>
+              <button class="btn-mil flex-fill" style="font-size:0.65rem;padding:5px;${r.status==='offline'?'opacity:0.4;cursor:not-allowed':''}" onclick="MilToast.show('${r.id} Recalled','Unit returning to base','warning')"><i class="fa-solid fa-arrow-rotate-left me-1"></i>Recall</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join(''));
+  </script>
+</div>
+
+<!-- Full Robot Table -->
+<div class="section-card mb-4" data-aos="fade-up">
+  <div class="card-header-mil">
+    <span class="title"><i class="fa-solid fa-table-list"></i> Full Robot Registry</span>
+    <input type="text" class="mil-input" style="width:200px;padding:5px 10px;font-size:0.78rem" placeholder="Filter by ID..."/>
+  </div>
+  <div class="card-body-mil p-0">
+    <div class="table-responsive">
+      <table class="mil-table">
+        <thead><tr>
+          <th>Unit ID</th><th>Model</th><th>Firmware</th><th>Status</th>
+          <th>Battery</th><th>GPS Coords</th><th>Mission</th>
+          <th>Uptime</th><th>Last Sync</th><th>Action</th>
+        </tr></thead>
+        <tbody>
+          <tr><td class="fw-700 text-primary-custom">R-01</td><td class="fs-xs">TALON-X2</td><td class="fs-xs text-muted-custom">v3.2.1</td><td><span class="status-dot online me-1"></span><span class="fs-xs">Online</span></td><td><span class="fs-xs text-primary-custom">87%</span></td><td class="fs-xs" data-gps data-lat="34.0521" data-lng="-118.2436">34.05210°N 118.2436°W</td><td class="fs-xs">MSN-001</td><td class="fs-xs text-muted-custom">42h 18m</td><td class="fs-xs text-muted-custom">14:33</td><td><button class="btn-mil fs-xs" style="padding:3px 9px">Detail</button></td></tr>
+          <tr><td class="fw-700 text-primary-custom">R-03</td><td class="fs-xs">RECON-9</td><td class="fs-xs text-muted-custom">v2.9.4</td><td><span class="status-dot online me-1"></span><span class="fs-xs">Online</span></td><td><span class="fs-xs text-primary-custom">62%</span></td><td class="fs-xs" data-gps data-lat="34.0612" data-lng="-118.2580">34.06120°N 118.2580°W</td><td class="fs-xs">MSN-004</td><td class="fs-xs text-muted-custom">28h 05m</td><td class="fs-xs text-muted-custom">14:31</td><td><button class="btn-mil fs-xs" style="padding:3px 9px">Detail</button></td></tr>
+          <tr><td class="fw-700" style="color:var(--warning)">R-07</td><td class="fs-xs">TALON-X3</td><td class="fs-xs text-muted-custom">v3.2.1</td><td><span class="status-dot warning me-1"></span><span class="fs-xs text-warn">Alert</span></td><td><span class="fs-xs text-primary-custom">73%</span></td><td class="fs-xs" data-gps data-lat="34.0705" data-lng="-118.2601">34.07050°N 118.2601°W</td><td class="fs-xs text-warn">TH-001</td><td class="fs-xs text-muted-custom">15h 42m</td><td class="fs-xs text-muted-custom">14:32</td><td><button class="btn-mil fs-xs" style="padding:3px 9px">Detail</button></td></tr>
+          <tr><td class="fw-700 text-danger-custom">R-14</td><td class="fs-xs">RECON-7</td><td class="fs-xs text-muted-custom">v2.8.0</td><td><span class="status-dot standby me-1"></span><span class="fs-xs text-warn">Standby</span></td><td><span class="fs-xs text-danger-custom blink-slow">18%</span></td><td class="fs-xs text-muted-custom">—</td><td class="fs-xs text-muted-custom">Charging</td><td class="fs-xs text-muted-custom">—</td><td class="fs-xs text-muted-custom">14:05</td><td><button class="btn-mil fs-xs" style="padding:3px 9px">Detail</button></td></tr>
+          <tr><td class="fw-700 text-primary-custom">R-19</td><td class="fs-xs">VIPER-12</td><td class="fs-xs text-muted-custom">v4.0.0</td><td><span class="status-dot online me-1"></span><span class="fs-xs">Online</span></td><td><span class="fs-xs text-primary-custom">93%</span></td><td class="fs-xs" data-gps data-lat="34.0445" data-lng="-118.2345">34.04450°N 118.2345°W</td><td class="fs-xs">MSN-003</td><td class="fs-xs text-muted-custom">88h 11m</td><td class="fs-xs text-muted-custom">14:33</td><td><button class="btn-mil fs-xs" style="padding:3px 9px">Detail</button></td></tr>
+          <tr><td class="fw-700" style="color:#94a3b8">R-22</td><td class="fs-xs">TALON-X1</td><td class="fs-xs text-muted-custom">v2.1.0</td><td><span class="status-dot offline me-1"></span><span class="fs-xs text-danger-custom">Offline</span></td><td><span class="fs-xs text-muted-custom">—</span></td><td class="fs-xs text-muted-custom">Signal lost</td><td class="fs-xs text-muted-custom">—</td><td class="fs-xs text-muted-custom">—</td><td class="fs-xs text-muted-custom">13:12</td><td><button class="btn-mil fs-xs" style="padding:3px 9px" disabled>N/A</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</main>
+<footer id="footer">
+  <div><span class="footer-brand">MILSURV</span> &bull; Robot Fleet Management</div>
+  <div class="d-flex align-items-center gap-3"><span><span class="status-dot online me-1"></span>18 Units Active</span></div>
+</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/dashboard.js"></script>
+</body>
+</html>

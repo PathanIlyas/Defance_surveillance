@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MilSurv Command Center | Dashboard</title>
+<!-- Bootstrap 5 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<!-- AOS -->
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css"/>
+<!-- Custom CSS -->
+<link rel="stylesheet" href="css/style.css"/>
+<link rel="stylesheet" href="css/animation.css"/>
+<link rel="stylesheet" href="css/dashboard.css"/>
+<link rel="stylesheet" href="css/responsive.css"/>
+</head>
+<body class="page-transition">
+
+<!-- ===== LOADING OVERLAY ===== -->
+<div id="loading-overlay">
+  <div class="military-spinner"></div>
+  <div class="logo-text">MILSURV</div>
+  <div class="sub-text">Initializing Command System...</div>
+</div>
+
+<!-- ===== SIDEBAR BACKDROP ===== -->
+<div id="sidebar-backdrop"></div>
+
+<!-- ===== EMERGENCY OVERLAY ===== -->
+<div id="emergency-overlay">
+  <div class="emergency-modal">
+    <i class="fa-solid fa-radiation fa-2x text-danger-custom mb-3 blink-alert"></i>
+    <h2><i class="fa-solid fa-triangle-exclamation me-2"></i>EMERGENCY PROTOCOL</h2>
+    <p class="mb-4" style="color:#ff8888">All units stand by. Emergency response teams have been notified. Activating defense grid Alpha-7.</p>
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+      <button class="btn-mil-filled" style="background:#ff4d4d" onclick="MilToast.show('Protocol Activated','All units alerted','danger')">ACTIVATE PROTOCOL</button>
+      <button class="btn-mil" id="emergency-close">STAND DOWN</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOAST CONTAINER ===== -->
+<div id="toast-container"></div>
+
+<!-- ===== SIDEBAR ===== -->
+<nav id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-logo">
+      <div class="brand-icon rotate-icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <div>
+        <div class="brand-name">MilSurv</div>
+        <div class="brand-sub">Command Center</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-section-label">Main</div>
+  <a href="index.html" class="nav-item-mil active">
+    <span class="nav-icon"><i class="fa-solid fa-gauge-high"></i></span> Dashboard
+  </a>
+  <a href="pages/surveillance.html" class="nav-item-mil">
+    <span class="nav-icon"><i class="fa-solid fa-video"></i></span> Live Surveillance
+  </a>
+  <a href="pages/robots.html" class="nav-item-mil">
+    <span class="nav-icon"><i class="fa-solid fa-robot"></i></span> Robot Fleet
+    <span class="nav-badge">32</span>
+  </a>
+
+  <div class="sidebar-section-label">Operations</div>
+  <a href="#" class="nav-item-mil">
+    <span class="nav-icon"><i class="fa-solid fa-crosshairs"></i></span> Mission Control
+  </a>
+  <a href="#" class="nav-item-mil">
+    <span class="nav-icon"><i class="fa-solid fa-brain"></i></span> AI Detection
+  </a>
+  <a href="#" class="nav-item-mil">
+    <span class="nav-icon"><i class="fa-solid fa-wave-square"></i></span> Sensor Monitoring
+  </a>
+  <a href="#" class="nav-item-mil">
+    <span class="nav-icon"><i class="fa-solid fa-location-dot"></i></span> GPS Tracking
+  </a>
+  <a href="#" class="nav-item-mil">
+    <span class="nav-icon"><i class="fa-solid fa-tower-broadcast"></i></span> Communication
+  </a>
+
+  <div class="sidebar-section-label">Reports</div>
+  <a href="pages/alerts.html" class="nav-item-mil">
+    <span class="nav-icon"><i class="fa-solid fa-bell"></i></span> Alerts
+    <span class="nav-badge">7</span>
+  </a>
+  <a href="pages/reports.html" class="nav-item-mil">
+    <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span> Reports
+  </a>
+  <a href="pages/settings.html" class="nav-item-mil">
+    <span class="nav-icon"><i class="fa-solid fa-gear"></i></span> Settings
+  </a>
+
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="user-avatar">CM</div>
+      <div>
+        <div class="user-name">Col. Marcus</div>
+        <div class="user-role">Supreme Commander</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== TOPBAR ===== -->
+<header id="topbar">
+  <button class="topbar-menu-btn" id="menu-toggle">
+    <i class="fa-solid fa-bars"></i>
+  </button>
+
+  <div class="search-wrap">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" placeholder="Search units, missions, sectors..."/>
+  </div>
+
+  <div id="realtime-clock" class="topbar-clock"></div>
+
+  <div class="topbar-actions">
+    <!-- Weather -->
+    <div class="weather-widget d-none d-lg-flex" style="padding:5px 10px;gap:8px">
+      <i class="fa-solid fa-cloud-sun" style="color:#fbbf24;font-size:1.2rem"></i>
+      <div>
+        <div style="font-size:0.82rem;font-weight:700;color:#fff">28°C</div>
+        <div style="font-size:0.62rem;color:#94a3b8;letter-spacing:1px">CLEAR SKY</div>
+      </div>
+    </div>
+
+    <!-- Robot status -->
+    <div class="robot-status-pill">
+      <span class="status-dot online"></span> 18 Active Units
+    </div>
+
+    <!-- Notifications -->
+    <button class="topbar-btn" id="notif-btn" title="Notifications">
+      <i class="fa-solid fa-bell"></i>
+      <span class="notif-dot"></span>
+    </button>
+
+    <!-- Dark mode -->
+    <button class="topbar-btn" id="darkmode-btn" title="Toggle Theme">
+      <i class="fa-solid fa-moon"></i>
+    </button>
+
+    <!-- User -->
+    <div class="user-pill">
+      <div class="avatar">CM</div>
+      <span class="uname">Col. Marcus</span>
+    </div>
+
+    <!-- Emergency -->
+    <button class="btn-emergency-top" data-emergency>
+      <i class="fa-solid fa-radiation"></i>
+      <span>EMERGENCY</span>
+    </button>
+  </div>
+</header>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div id="main-wrapper">
+<main id="main-content">
+
+<!-- Page Header -->
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3" data-aos="fade-down">
+  <div>
+    <h4 class="mb-1 fw-700" style="letter-spacing:1px">
+      <i class="fa-solid fa-gauge-high me-2" style="color:var(--primary)"></i>COMMAND DASHBOARD
+    </h4>
+    <p class="fs-xs mb-0" style="letter-spacing:2px;text-transform:uppercase">
+      <span class="status-dot online me-2"></span>All Systems Operational &bull; Sector Alpha-9
+    </p>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <button class="btn-mil" onclick="MilToast.show('Report Generated','Daily report exported to PDF','success')">
+      <i class="fa-solid fa-file-export me-1"></i>Export
+    </button>
+    <button class="btn-mil-filled">
+      <i class="fa-solid fa-rotate me-1"></i>Refresh
+    </button>
+  </div>
+</div>
+
+<!-- ===== STAT CARDS ROW ===== -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-4 col-xl-2" data-aos="fade-up" data-aos-delay="0">
+    <div class="stat-card float-card">
+      <div class="top-row">
+        <span class="stat-label">Total Robots</span>
+        <div class="icon-box blue"><i class="fa-solid fa-robot"></i></div>
+      </div>
+      <div class="stat-value" data-counter data-target="32">0</div>
+      <div class="stat-change"><i class="fa-solid fa-arrow-up up"></i> +2 this week</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-xl-2" data-aos="fade-up" data-aos-delay="60">
+    <div class="stat-card float-card">
+      <div class="top-row">
+        <span class="stat-label">Active</span>
+        <div class="icon-box green"><i class="fa-solid fa-circle-play"></i></div>
+      </div>
+      <div class="stat-value" style="color:var(--primary)" data-counter data-target="18">0</div>
+      <div class="stat-change"><span class="status-dot online me-1"></span> Deployed</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-xl-2" data-aos="fade-up" data-aos-delay="120">
+    <div class="stat-card float-card danger">
+      <div class="top-row">
+        <span class="stat-label">Offline</span>
+        <div class="icon-box red"><i class="fa-solid fa-power-off"></i></div>
+      </div>
+      <div class="stat-value" style="color:var(--danger)" data-counter data-target="4">0</div>
+      <div class="stat-change"><span class="status-dot offline me-1"></span> Down</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-xl-2" data-aos="fade-up" data-aos-delay="180">
+    <div class="stat-card float-card">
+      <div class="top-row">
+        <span class="stat-label">Missions</span>
+        <div class="icon-box purple"><i class="fa-solid fa-crosshairs"></i></div>
+      </div>
+      <div class="stat-value" data-counter data-target="9">0</div>
+      <div class="stat-change"><i class="fa-solid fa-arrow-up up"></i> 3 critical</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-xl-2" data-aos="fade-up" data-aos-delay="240">
+    <div class="stat-card float-card danger">
+      <div class="top-row">
+        <span class="stat-label">Threats</span>
+        <div class="icon-box red"><i class="fa-solid fa-skull-crossbones"></i></div>
+      </div>
+      <div class="stat-value blink-slow" style="color:var(--danger)" data-counter data-target="7">0</div>
+      <div class="stat-change"><i class="fa-solid fa-triangle-exclamation" style="color:var(--danger)"></i> Today</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-xl-2" data-aos="fade-up" data-aos-delay="300">
+    <div class="stat-card float-card warning">
+      <div class="top-row">
+        <span class="stat-label">Alerts</span>
+        <div class="icon-box yellow"><i class="fa-solid fa-bell"></i></div>
+      </div>
+      <div class="stat-value" style="color:var(--warning)" data-counter data-target="23">0</div>
+      <div class="stat-change"><i class="fa-solid fa-arrow-up down"></i> +5 today</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECOND STAT ROW ===== -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="0">
+    <div class="stat-card float-card">
+      <div class="top-row">
+        <span class="stat-label">Battery</span>
+        <div class="icon-box green"><i class="fa-solid fa-battery-three-quarters"></i></div>
+      </div>
+      <div class="stat-value" style="color:var(--primary)">87%</div>
+      <div class="mil-progress mt-2"><div class="mil-progress-bar" data-progress="87" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="60">
+    <div class="stat-card float-card">
+      <div class="top-row">
+        <span class="stat-label">GPS Status</span>
+        <div class="icon-box blue"><i class="fa-solid fa-satellite"></i></div>
+      </div>
+      <div class="stat-value fs-5 mt-1 fw-700" style="color:var(--info)">LOCKED</div>
+      <div class="stat-change"><span class="status-dot online me-1"></span> 12 Satellites</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="120">
+    <div class="stat-card float-card">
+      <div class="top-row">
+        <span class="stat-label">Network</span>
+        <div class="icon-box purple"><i class="fa-solid fa-wifi"></i></div>
+      </div>
+      <div class="stat-value fs-5 mt-1 fw-700" style="color:var(--primary)">SECURE</div>
+      <div class="stat-change">
+        <div class="signal-bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="180">
+    <div class="stat-card float-card">
+      <div class="top-row">
+        <span class="stat-label">Cloud</span>
+        <div class="icon-box blue"><i class="fa-solid fa-cloud"></i></div>
+      </div>
+      <div class="stat-value fs-5 mt-1 fw-700" style="color:var(--info)">SYNCED</div>
+      <div class="stat-change"><i class="fa-solid fa-arrow-up up"></i> 99.9% uptime</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAP + RADAR ROW ===== -->
+<div class="row g-3 mb-4">
+  <!-- Live Map -->
+  <div class="col-lg-8" data-aos="fade-right">
+    <div class="section-card h-100">
+      <div class="card-header-mil">
+        <span class="title"><i class="fa-solid fa-map-location-dot"></i> Live Robot Map</span>
+        <div class="d-flex gap-2 align-items-center">
+          <span class="mil-badge green">LIVE</span>
+          <span class="mil-badge blue">SECTOR A-9</span>
+        </div>
+      </div>
+      <div class="card-body-mil p-0">
+        <div class="map-area" style="height:320px">
+          <div class="map-grid"></div>
+          <span class="map-overlay-label tl">34.0522°N</span>
+          <span class="map-overlay-label tr">GRID REF: A9-7</span>
+          <span class="map-overlay-label bl">OPERATIONAL ZONE</span>
+          <span class="map-overlay-label br">118.2437°W</span>
+          <!-- Terrain paths (CSS lines) -->
+          <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.15" xmlns="http://www.w3.org/2000/svg">
+            <polyline points="0,160 80,140 160,180 240,150 320,130 400,160 480,140" fill="none" stroke="#00ff9d" stroke-width="1.5" stroke-dasharray="6,4"/>
+            <polyline points="0,220 60,200 140,230 220,210 300,240 380,200 460,215" fill="none" stroke="#00ff9d" stroke-width="1" stroke-dasharray="4,6"/>
+            <rect x="60" y="60" width="90" height="60" rx="4" fill="rgba(0,255,157,0.07)" stroke="#00ff9d" stroke-width="1"/>
+            <rect x="280" y="180" width="70" height="50" rx="4" fill="rgba(255,77,77,0.07)" stroke="#ff4d4d" stroke-width="1"/>
+            <circle cx="150" cy="90" r="30" fill="none" stroke="rgba(0,255,157,0.15)" stroke-width="1"/>
+          </svg>
+          <!-- Pings injected by JS -->
+          <div class="map-pings" style="position:absolute;inset:0"></div>
+          <!-- Radar overlay (bottom right) -->
+          <div style="position:absolute;bottom:16px;right:16px;opacity:0.7;transform:scale(0.55);transform-origin:bottom right">
+            <div class="radar-container">
+              <div class="radar-base">
+                <div class="radar-circle"></div><div class="radar-circle"></div>
+                <div class="radar-circle"></div><div class="radar-circle"></div>
+                <div class="radar-line-h"></div><div class="radar-line-v"></div>
+                <div class="radar-sweep"></div>
+                <div class="radar-dot" style="top:35%;left:60%"></div>
+                <div class="radar-dot" style="top:62%;left:28%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Map Legend -->
+        <div class="d-flex gap-4 p-3 flex-wrap" style="border-top:1px solid var(--border)">
+          <span class="fs-xs" style="color:var(--text-secondary)"><span class="map-ping green" style="position:relative;display:inline-block;width:10px;height:10px;border-radius:50%;background:#00ff9d;margin-right:6px;vertical-align:middle"></span>Active Unit</span>
+          <span class="fs-xs" style="color:var(--text-secondary)"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#fbbf24;margin-right:6px;vertical-align:middle"></span>Standby</span>
+          <span class="fs-xs" style="color:var(--text-secondary)"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ff4d4d;margin-right:6px;vertical-align:middle"></span>Threat Zone</span>
+          <span class="fs-xs ms-auto" style="color:var(--primary)"><i class="fa-solid fa-arrows-to-dot me-1"></i>6 Units on Map</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Radar + Weather -->
+  <div class="col-lg-4" data-aos="fade-left">
+    <div class="section-card mb-3">
+      <div class="card-header-mil">
+        <span class="title"><i class="fa-solid fa-circle-dot"></i> Radar Scan</span>
+        <span class="mil-badge green blink-slow">SCANNING</span>
+      </div>
+      <div class="card-body-mil d-flex flex-column align-items-center gap-3">
+        <div class="radar-container">
+          <div class="radar-base">
+            <div class="radar-circle"></div><div class="radar-circle"></div>
+            <div class="radar-circle"></div><div class="radar-circle"></div>
+            <div class="radar-line-h"></div><div class="radar-line-v"></div>
+            <div class="radar-sweep"></div>
+            <div class="radar-dot" style="top:30%;left:55%"></div>
+            <div class="radar-dot" style="top:58%;left:30%;animation-delay:0.5s"></div>
+            <div class="radar-ping" style="top:29%;left:54%"></div>
+          </div>
+        </div>
+        <div class="text-center">
+          <div class="fs-xs" style="letter-spacing:2px;color:var(--text-secondary)">RANGE: 50KM &bull; FREQ: 9.4GHz</div>
+          <div class="fs-xs mt-1" style="color:var(--primary)">2 CONTACTS DETECTED</div>
+        </div>
+      </div>
+    </div>
+    <!-- Weather -->
+    <div class="section-card">
+      <div class="card-header-mil">
+        <span class="title"><i class="fa-solid fa-cloud-sun"></i> Field Conditions</span>
+      </div>
+      <div class="card-body-mil">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <i class="fa-solid fa-sun fa-2x" style="color:#fbbf24"></i>
+          <div>
+            <div class="weather-temp">28°C</div>
+            <div class="weather-desc">Clear Sky – Low Wind</div>
+          </div>
+        </div>
+        <div class="row g-2 text-center">
+          <div class="col-4"><div style="font-size:0.68rem;color:var(--text-secondary)">WIND</div><div style="font-size:0.9rem;font-weight:700;color:#fff">12 km/h</div></div>
+          <div class="col-4"><div style="font-size:0.68rem;color:var(--text-secondary)">HUMIDITY</div><div style="font-size:0.9rem;font-weight:700;color:#fff">45%</div></div>
+          <div class="col-4"><div style="font-size:0.68rem;color:var(--text-secondary)">VISIBILITY</div><div style="font-size:0.9rem;font-weight:700;color:#fff">18 km</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CAMERA FEEDS ===== -->
+<div class="mb-4" data-aos="fade-up">
+  <div class="section-title mb-3"><i class="fa-solid fa-video me-2"></i>Live Camera Feeds</div>
+  <div class="row g-3">
+    <div class="col-6 col-md-3">
+      <div class="cam-card float-card">
+        <div class="cam-feed">
+          <canvas id="cam1" style="width:100%;height:100%;display:block"></canvas>
+          <div class="cam-scan-line"></div>
+          <div class="cam-rec-dot">REC</div>
+          <div class="cam-overlay-corner tl"></div><div class="cam-overlay-corner tr"></div>
+          <div class="cam-overlay-corner bl"></div><div class="cam-overlay-corner br"></div>
+          <div style="position:absolute;top:10px;right:10px;font-size:0.6rem;color:var(--primary);letter-spacing:1px">CAM-01</div>
+        </div>
+        <div class="cam-info"><div class="cam-id">CAM-01</div><div class="cam-loc"><i class="fa-solid fa-location-dot me-1" style="color:var(--primary)"></i>North Gate – Sector A</div></div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="cam-card float-card">
+        <div class="cam-feed">
+          <canvas id="cam2" style="width:100%;height:100%;display:block"></canvas>
+          <div class="cam-scan-line" style="animation-delay:1s"></div>
+          <div class="cam-rec-dot">REC</div>
+          <div class="cam-overlay-corner tl"></div><div class="cam-overlay-corner tr"></div>
+          <div class="cam-overlay-corner bl"></div><div class="cam-overlay-corner br"></div>
+          <div style="position:absolute;top:10px;right:10px;font-size:0.6rem;color:var(--primary);letter-spacing:1px">CAM-02</div>
+        </div>
+        <div class="cam-info"><div class="cam-id">CAM-02</div><div class="cam-loc"><i class="fa-solid fa-location-dot me-1" style="color:var(--warning)"></i>East Perimeter</div></div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="cam-card float-card">
+        <div class="cam-feed">
+          <canvas id="cam3" style="width:100%;height:100%;display:block"></canvas>
+          <div class="cam-scan-line" style="animation-delay:2s"></div>
+          <div class="cam-rec-dot">REC</div>
+          <div class="cam-overlay-corner tl"></div><div class="cam-overlay-corner tr"></div>
+          <div class="cam-overlay-corner bl"></div><div class="cam-overlay-corner br"></div>
+          <div style="position:absolute;top:10px;right:10px;font-size:0.6rem;color:var(--primary);letter-spacing:1px">CAM-03</div>
+        </div>
+        <div class="cam-info"><div class="cam-id">CAM-03</div><div class="cam-loc"><i class="fa-solid fa-location-dot me-1" style="color:var(--primary)"></i>Command Bunker</div></div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="cam-card float-card">
+        <div class="cam-feed" style="background:#060e1c">
+          <canvas id="cam4" style="width:100%;height:100%;display:block;opacity:0.4"></canvas>
+          <div class="no-signal">
+            <i class="fa-solid fa-video-slash fa-lg" style="color:#ff4d4d"></i>
+            <span>NO SIGNAL</span>
+          </div>
+          <div class="cam-overlay-corner tl" style="border-color:#ff4d4d"></div>
+          <div class="cam-overlay-corner tr" style="border-color:#ff4d4d"></div>
+          <div class="cam-overlay-corner bl" style="border-color:#ff4d4d"></div>
+          <div class="cam-overlay-corner br" style="border-color:#ff4d4d"></div>
+        </div>
+        <div class="cam-info"><div class="cam-id" style="color:#ff4d4d">CAM-04</div><div class="cam-loc"><i class="fa-solid fa-location-dot me-1" style="color:#ff4d4d"></i>South Tower – OFFLINE</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CHARTS ROW ===== -->
+<div class="row g-3 mb-4">
+  <div class="col-md-8" data-aos="fade-right">
+    <div class="section-card h-100">
+      <div class="card-header-mil">
+        <span class="title"><i class="fa-solid fa-chart-line"></i> Threat Analytics</span>
+        <div class="d-flex gap-2">
+          <span class="mil-badge blue">7 DAYS</span>
+        </div>
+      </div>
+      <div class="card-body-mil"><div class="chart-wrap"><canvas id="threatChart"></canvas></div></div>
+    </div>
+  </div>
+  <div class="col-md-4" data-aos="fade-left">
+    <div class="section-card h-100">
+      <div class="card-header-mil">
+        <span class="title"><i class="fa-solid fa-robot"></i> Fleet Status</span>
+      </div>
+      <div class="card-body-mil"><div class="chart-wrap"><canvas id="robotChart"></canvas></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-5" data-aos="fade-right">
+    <div class="section-card h-100">
+      <div class="card-header-mil">
+        <span class="title"><i class="fa-solid fa-battery-half"></i> Battery Analytics</span>
+      </div>
+      <div class="card-body-mil"><div class="chart-wrap"><canvas id="batteryChart"></canvas></div></div>
+    </div>
+  </div>
+  <div class="col-md-7" data-aos="fade-left">
+    <div class="section-card h-100">
+      <div class="card-header-mil">
+        <span class="title"><i class="fa-solid fa-chart-area"></i> Mission Analytics</span>
+      </div>
+      <div class="card-body-mil"><div class="chart-wrap"><canvas id="missionChart"></canvas></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== AI DETECTION TABLE ===== -->
+<div class="section-card mb-4" data-aos="fade-up">
+  <div class="card-header-mil">
+    <span class="title"><i class="fa-solid fa-brain"></i> AI Detection Log</span>
+    <div class="d-flex gap-2 align-items-center">
+      <span class="mil-badge red blink-slow">3 ACTIVE THREATS</span>
+      <button class="btn-mil fs-xs">View All</button>
+    </div>
+  </div>
+  <div class="card-body-mil p-0">
+    <div class="table-responsive">
+      <table class="mil-table">
+        <thead><tr>
+          <th>#</th><th>Unit</th><th>Threat Type</th><th>Confidence</th>
+          <th>Location</th><th>Time</th><th>Status</th><th>Action</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td class="fs-xs text-muted-custom">TH-001</td>
+            <td><span class="fw-600">R-07</span></td>
+            <td><span class="mil-badge red">Hostile Vehicle</span></td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="mil-progress" style="width:80px"><div class="mil-progress-bar danger" data-progress="94" style="width:0%"></div></div>
+                <span class="fs-xs text-danger-custom">94%</span>
+              </div>
+            </td>
+            <td class="fs-xs">Grid F7 – 34.01°N</td>
+            <td class="fs-xs text-muted-custom">14:32:08</td>
+            <td><span class="mil-badge red blink-alert">ACTIVE</span></td>
+            <td><button class="btn-mil fs-xs" style="padding:4px 10px" onclick="MilToast.show('Unit Dispatched','R-12 en route to Grid F7','danger')">Dispatch</button></td>
+          </tr>
+          <tr>
+            <td class="fs-xs text-muted-custom">TH-002</td>
+            <td><span class="fw-600">R-12</span></td>
+            <td><span class="mil-badge yellow">Perimeter Breach</span></td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="mil-progress" style="width:80px"><div class="mil-progress-bar warning" data-progress="78" style="width:0%"></div></div>
+                <span class="fs-xs" style="color:var(--warning)">78%</span>
+              </div>
+            </td>
+            <td class="fs-xs">Sector E4 – 34.05°N</td>
+            <td class="fs-xs text-muted-custom">14:28:55</td>
+            <td><span class="mil-badge yellow">MONITORING</span></td>
+            <td><button class="btn-mil fs-xs" style="padding:4px 10px">Investigate</button></td>
+          </tr>
+          <tr>
+            <td class="fs-xs text-muted-custom">TH-003</td>
+            <td><span class="fw-600">R-03</span></td>
+            <td><span class="mil-badge blue">Drone Detected</span></td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="mil-progress" style="width:80px"><div class="mil-progress-bar" data-progress="87" style="width:0%"></div></div>
+                <span class="fs-xs text-primary-custom">87%</span>
+              </div>
+            </td>
+            <td class="fs-xs">Airspace B2 – Alt 200m</td>
+            <td class="fs-xs text-muted-custom">14:19:41</td>
+            <td><span class="mil-badge red blink-alert">ACTIVE</span></td>
+            <td><button class="btn-mil fs-xs" style="padding:4px 10px">Track</button></td>
+          </tr>
+          <tr>
+            <td class="fs-xs text-muted-custom">TH-004</td>
+            <td><span class="fw-600">R-19</span></td>
+            <td><span class="mil-badge green">False Positive</span></td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="mil-progress" style="width:80px"><div class="mil-progress-bar" data-progress="31" style="width:0%"></div></div>
+                <span class="fs-xs text-muted-custom">31%</span>
+              </div>
+            </td>
+            <td class="fs-xs">Sector C9 – Civilian</td>
+            <td class="fs-xs text-muted-custom">14:05:17</td>
+            <td><span class="mil-badge green">CLEARED</span></td>
+            <td><button class="btn-mil fs-xs" style="padding:4px 10px" disabled>Closed</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SENSOR + BATTERY ROW ===== -->
+<div class="row g-3 mb-4">
+  <!-- Sensor Cards -->
+  <div class="col-lg-7" data-aos="fade-right">
+    <div class="section-card h-100">
+      <div class="card-header-mil">
+        <span class="title"><i class="fa-solid fa-wave-square"></i> Sensor Monitoring</span>
+        <span class="mil-badge green">NOMINAL</span>
+      </div>
+      <div class="card-body-mil">
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="sensor-card">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div class="icon-box red" style="width:36px;height:36px;font-size:0.85rem"><i class="fa-solid fa-temperature-high"></i></div>
+                <span class="mil-badge yellow">HIGH</span>
+              </div>
+              <div class="sensor-value text-warn">72°C</div>
+              <div class="sensor-unit">Core Temperature – R-07</div>
+              <div id="sensor-temp-bar"></div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="sensor-card">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div class="icon-box blue" style="width:36px;height:36px;font-size:0.85rem"><i class="fa-solid fa-droplet"></i></div>
+                <span class="mil-badge green">NORMAL</span>
+              </div>
+              <div class="sensor-value text-info-custom">45%</div>
+              <div class="sensor-unit">Humidity – Field Env.</div>
+              <div id="sensor-humid-bar"></div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="sensor-card">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div class="icon-box purple" style="width:36px;height:36px;font-size:0.85rem"><i class="fa-solid fa-gauge"></i></div>
+                <span class="mil-badge yellow">ELEVATED</span>
+              </div>
+              <div class="sensor-value" style="color:#a78bfa">88 hPa</div>
+              <div class="sensor-unit">Atmospheric Pressure</div>
+              <div id="sensor-pressure-bar"></div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="sensor-card">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div class="icon-box green" style="width:36px;height:36px;font-size:0.85rem"><i class="fa-solid fa-wifi"></i></div>
+                <span class="mil-badge green">STRONG</span>
+              </div>
+              <div class="sensor-value text-primary-custom">91%</div>
+              <div class="sensor-unit">Signal Strength – Comms</div>
+              <div id="sensor-signal-bar"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Battery Monitoring -->
+  <div class="col-lg-5" data-aos="fade-left">
+    <div class="section-card h-100">
+      <div class="card-header-mil">
+        <span class="title"><i class="fa-solid fa-battery-half"></i> Battery Monitor</span>
+      </div>
+      <div class="card-body-mil">
+        <div class="d-flex justify-content-center gap-4 mb-3">
+          <div class="text-center">
+            <div class="battery-circle" id="battery-main"></div>
+            <div class="fs-xs mt-1 text-muted-custom">Unit R-01</div>
+          </div>
+          <div class="text-center">
+            <div class="battery-circle" id="battery-fleet"></div>
+            <div class="fs-xs mt-1 text-muted-custom">Fleet Avg</div>
+          </div>
+        </div>
+        <hr class="mil-divider mb-3"/>
+        <div class="d-flex flex-column gap-2">
+          <div>
+            <div class="d-flex justify-content-between fs-xs mb-1">
+              <span class="text-muted-custom">R-01</span><span class="text-primary-custom">87%</span>
+            </div>
+            <div class="mil-progress"><div class="mil-progress-bar" data-progress="87" style="width:0%"></div></div>
+          </div>
+          <div>
+            <div class="d-flex justify-content-between fs-xs mb-1">
+              <span class="text-muted-custom">R-05</span><span class="text-warn">41%</span>
+            </div>
+            <div class="mil-progress"><div class="mil-progress-bar warning" data-progress="41" style="width:0%"></div></div>
+          </div>
+          <div>
+            <div class="d-flex justify-content-between fs-xs mb-1">
+              <span class="text-muted-custom">R-14</span><span class="text-danger-custom">18%</span>
+            </div>
+            <div class="mil-progress"><div class="mil-progress-bar danger" data-progress="18" style="width:0%"></div></div>
+          </div>
+          <div>
+            <div class="d-flex justify-content-between fs-xs mb-1">
+              <span class="text-muted-custom">R-22</span><span class="text-primary-custom">93%</span>
+            </div>
+            <div class="mil-progress"><div class="mil-progress-bar" data-progress="93" style="width:0%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MISSION STATUS + COMM STATUS ===== -->
+<div class="row g-3 mb-4">
+  <!-- Mission Status Table -->
+  <div class="col-lg-7" data-aos="fade-right">
+    <div class="section-card h-100">
+      <div class="card-header-mil">
+        <span class="title"><i class="fa-solid fa-crosshairs"></i> Mission Status</span>
+        <span class="mil-badge yellow">9 ACTIVE</span>
+      </div>
+      <div class="card-body-mil p-0">
+        <div class="table-responsive">
+          <table class="mil-table">
+            <thead><tr>
+              <th>Mission ID</th><th>Type</th><th>Squad</th>
+              <th>Progress</th><th>ETA</th><th>Status</th>
+            </tr></thead>
+            <tbody>
+              <tr>
+                <td class="fw-700" style="color:var(--primary)">MSN-001</td>
+                <td class="fs-xs">Reconnaissance</td>
+                <td class="fs-xs">Alpha Squad</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2" data-live-progress data-live-progress="78" data-max="100">
+                    <div class="mil-progress" style="width:80px"><div class="mil-progress-bar" data-progress="78" style="width:0%"></div></div>
+                    <span class="fs-xs pct-val">78%</span>
+                  </div>
+                </td>
+                <td class="fs-xs text-muted-custom">02:15</td>
+                <td><span class="mil-badge green">IN PROGRESS</span></td>
+              </tr>
+              <tr>
+                <td class="fw-700" style="color:var(--danger)">MSN-002</td>
+                <td class="fs-xs">Strike</td>
+                <td class="fs-xs">Bravo Squad</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2" data-live-progress data-live-progress="45" data-max="100">
+                    <div class="mil-progress" style="width:80px"><div class="mil-progress-bar warning" data-progress="45" style="width:0%"></div></div>
+                    <span class="fs-xs pct-val">45%</span>
+                  </div>
+                </td>
+                <td class="fs-xs text-muted-custom">04:30</td>
+                <td><span class="mil-badge red">CRITICAL</span></td>
+              </tr>
+              <tr>
+                <td class="fw-700" style="color:var(--primary)">MSN-003</td>
+                <td class="fs-xs">Patrol</td>
+                <td class="fs-xs">Charlie Squad</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2" data-live-progress data-live-progress="92" data-max="100">
+                    <div class="mil-progress" style="width:80px"><div class="mil-progress-bar" data-progress="92" style="width:0%"></div></div>
+                    <span class="fs-xs pct-val">92%</span>
+                  </div>
+                </td>
+                <td class="fs-xs text-muted-custom">00:22</td>
+                <td><span class="mil-badge blue">COMPLETING</span></td>
+              </tr>
+              <tr>
+                <td class="fw-700" style="color:var(--warning)">MSN-004</td>
+                <td class="fs-xs">Surveillance</td>
+                <td class="fs-xs">Delta Squad</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2" data-live-progress data-live-progress="60" data-max="100">
+                    <div class="mil-progress" style="width:80px"><div class="mil-progress-bar warning" data-progress="60" style="width:0%"></div></div>
+                    <span class="fs-xs pct-val">60%</span>
+                  </div>
+                </td>
+                <td class="fs-xs text-muted-custom">03:10</td>
+                <td><span class="mil-badge yellow">IN PROGRESS</span></td>
+              </tr>
+              <tr>
+                <td class="fw-700">MSN-005</td>
+                <td class="fs-xs">Rescue</td>
+                <td class="fs-xs">Echo Squad</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2" data-live-progress data-live-progress="15" data-max="100">
+                    <div class="mil-progress" style="width:80px"><div class="mil-progress-bar danger" data-progress="15" style="width:0%"></div></div>
+                    <span class="fs-xs pct-val">15%</span>
+                  </div>
+                </td>
+                <td class="fs-xs text-muted-custom">08:45</td>
+                <td><span class="mil-badge yellow">DEPLOYING</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Communication Status -->
+  <div class="col-lg-5" data-aos="fade-left">
+    <div class="section-card h-100">
+      <div class="card-header-mil">
+        <span class="title"><i class="fa-solid fa-tower-broadcast"></i> Comm Status</span>
+      </div>
+      <div class="card-body-mil">
+        <div class="comm-row">
+          <div class="icon-box green" style="width:36px;height:36px;font-size:0.8rem"><i class="fa-solid fa-satellite"></i></div>
+          <div class="flex-grow-1">
+            <div class="fs-sm fw-600">Satellite Link – SAT-9</div>
+            <div class="fs-xs text-muted-custom">Uplink: 120 Mbps</div>
+          </div>
+          <div class="signal-bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+          <span class="mil-badge green ms-2">ACTIVE</span>
+        </div>
+        <div class="comm-row">
+          <div class="icon-box blue" style="width:36px;height:36px;font-size:0.8rem"><i class="fa-solid fa-radio"></i></div>
+          <div class="flex-grow-1">
+            <div class="fs-sm fw-600">Radio – Channel 4</div>
+            <div class="fs-xs text-muted-custom">Freq: 146.52 MHz</div>
+          </div>
+          <div class="signal-bars medium"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+          <span class="mil-badge yellow ms-2">PARTIAL</span>
+        </div>
+        <div class="comm-row">
+          <div class="icon-box purple" style="width:36px;height:36px;font-size:0.8rem"><i class="fa-solid fa-wifi"></i></div>
+          <div class="flex-grow-1">
+            <div class="fs-sm fw-600">Encrypted WiFi Mesh</div>
+            <div class="fs-xs text-muted-custom">AES-256 Encrypted</div>
+          </div>
+          <div class="signal-bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+          <span class="mil-badge green ms-2">SECURE</span>
+        </div>
+        <div class="comm-row">
+          <div class="icon-box red" style="width:36px;height:36px;font-size:0.8rem"><i class="fa-solid fa-tower-cell"></i></div>
+          <div class="flex-grow-1">
+            <div class="fs-sm fw-600">Ground Relay – R-08</div>
+            <div class="fs-xs text-muted-custom">Node offline</div>
+          </div>
+          <div class="signal-bars weak"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+          <span class="mil-badge red ms-2">OFFLINE</span>
+        </div>
+        <div class="comm-row">
+          <div class="icon-box yellow" style="width:36px;height:36px;font-size:0.8rem"><i class="fa-solid fa-broadcast-tower"></i></div>
+          <div class="flex-grow-1">
+            <div class="fs-sm fw-600">Emergency Beacon</div>
+            <div class="fs-xs text-muted-custom">VHF – Standby mode</div>
+          </div>
+          <div class="signal-bars medium"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+          <span class="mil-badge yellow ms-2">STANDBY</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ALERT TIMELINE + ROBOT LIST ===== -->
+<div class="row g-3 mb-4">
+  <!-- Alert Timeline -->
+  <div class="col-lg-4" data-aos="fade-right">
+    <div class="section-card h-100">
+      <div class="card-header-mil">
+        <span class="title"><i class="fa-solid fa-bell"></i> Alert Timeline</span>
+        <span class="mil-badge red blink-slow">LIVE</span>
+      </div>
+      <div class="card-body-mil">
+        <div class="alert-timeline" id="alert-timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <div>
+              <div class="timeline-title">Hostile Contact – F7</div>
+              <div class="timeline-meta">R-07 detected vehicle &bull; 14:32</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot yellow"><i class="fa-solid fa-wifi"></i></div>
+            <div>
+              <div class="timeline-title">Comm Interference</div>
+              <div class="timeline-meta">Channel 4 degraded &bull; 14:21</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot blue"><i class="fa-solid fa-drone-front"></i></div>
+            <div>
+              <div class="timeline-title">UAV Detected</div>
+              <div class="timeline-meta">Airspace B2 – 200m &bull; 14:19</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot yellow"><i class="fa-solid fa-battery-quarter"></i></div>
+            <div>
+              <div class="timeline-title">Battery Critical – R-14</div>
+              <div class="timeline-meta">18% remaining &bull; 14:05</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot green"><i class="fa-solid fa-circle-check"></i></div>
+            <div>
+              <div class="timeline-title">Patrol Complete</div>
+              <div class="timeline-meta">Charlie Squad – Sector C &bull; 13:48</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot red"><i class="fa-solid fa-person-running"></i></div>
+            <div>
+              <div class="timeline-title">Perimeter Breach</div>
+              <div class="timeline-meta">East Gate – Sector E4 &bull; 13:30</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Robot Fleet Table -->
+  <div class="col-lg-8" data-aos="fade-left">
+    <div class="section-card h-100">
+      <div class="card-header-mil">
+        <span class="title"><i class="fa-solid fa-robot"></i> Robot Fleet</span>
+        <div class="d-flex gap-2">
+          <span class="mil-badge green">18 ACTIVE</span>
+          <button class="btn-mil fs-xs">Deploy All</button>
+        </div>
+      </div>
+      <div class="card-body-mil p-0">
+        <div class="table-responsive">
+          <table class="mil-table">
+            <thead><tr>
+              <th>Unit ID</th><th>Model</th><th>Status</th>
+              <th>Battery</th><th>GPS</th><th>Mission</th><th>Last Seen</th>
+            </tr></thead>
+            <tbody>
+              <tr>
+                <td class="fw-700 text-primary-custom">R-01</td>
+                <td class="fs-xs">TALON-X2</td>
+                <td><span class="d-flex align-items-center gap-2"><span class="status-dot online"></span><span class="fs-xs">Online</span></span></td>
+                <td><span class="fs-xs text-primary-custom">87%</span></td>
+                <td class="fs-xs"><span class="status-dot online me-1"></span>Lock</td>
+                <td class="fs-xs">MSN-001</td>
+                <td class="fs-xs text-muted-custom">14:33</td>
+              </tr>
+              <tr>
+                <td class="fw-700 text-primary-custom">R-05</td>
+                <td class="fs-xs">SENTINEL-V</td>
+                <td><span class="d-flex align-items-center gap-2"><span class="status-dot online"></span><span class="fs-xs">Online</span></span></td>
+                <td><span class="fs-xs" style="color:var(--warning)">41%</span></td>
+                <td class="fs-xs"><span class="status-dot online me-1"></span>Lock</td>
+                <td class="fs-xs">MSN-004</td>
+                <td class="fs-xs text-muted-custom">14:31</td>
+              </tr>
+              <tr>
+                <td class="fw-700 text-primary-custom">R-07</td>
+                <td class="fs-xs">TALON-X3</td>
+                <td><span class="d-flex align-items-center gap-2"><span class="status-dot warning"></span><span class="fs-xs text-warn">Alert</span></span></td>
+                <td><span class="fs-xs text-primary-custom">73%</span></td>
+                <td class="fs-xs"><span class="status-dot online me-1"></span>Lock</td>
+                <td class="fs-xs text-warn">TH-001</td>
+                <td class="fs-xs text-muted-custom">14:32</td>
+              </tr>
+              <tr>
+                <td class="fw-700 text-danger-custom">R-14</td>
+                <td class="fs-xs">RECON-9</td>
+                <td><span class="d-flex align-items-center gap-2"><span class="status-dot standby"></span><span class="fs-xs" style="color:var(--warning)">Standby</span></span></td>
+                <td><span class="fs-xs text-danger-custom blink-slow">18%</span></td>
+                <td class="fs-xs"><span class="status-dot standby me-1"></span>Weak</td>
+                <td class="fs-xs text-muted-custom">Charging</td>
+                <td class="fs-xs text-muted-custom">14:05</td>
+              </tr>
+              <tr>
+                <td class="fw-700" style="color:#94a3b8">R-22</td>
+                <td class="fs-xs">SENTINEL-III</td>
+                <td><span class="d-flex align-items-center gap-2"><span class="status-dot offline"></span><span class="fs-xs text-danger-custom">Offline</span></span></td>
+                <td><span class="fs-xs text-muted-custom">—</span></td>
+                <td class="fs-xs"><span class="status-dot offline me-1"></span>Lost</td>
+                <td class="fs-xs text-muted-custom">—</td>
+                <td class="fs-xs text-muted-custom">13:12</td>
+              </tr>
+              <tr>
+                <td class="fw-700 text-primary-custom">R-19</td>
+                <td class="fs-xs">VIPER-12</td>
+                <td><span class="d-flex align-items-center gap-2"><span class="status-dot online"></span><span class="fs-xs">Online</span></span></td>
+                <td><span class="fs-xs text-primary-custom">93%</span></td>
+                <td class="fs-xs"><span class="status-dot online me-1"></span>Lock</td>
+                <td class="fs-xs">MSN-003</td>
+                <td class="fs-xs text-muted-custom">14:33</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== RECENT ACTIVITIES + ACTIVITY CHART ===== -->
+<div class="row g-3 mb-4">
+  <div class="col-lg-8" data-aos="fade-up">
+    <div class="section-card">
+      <div class="card-header-mil">
+        <span class="title"><i class="fa-solid fa-list-check"></i> Recent Activities</span>
+        <button class="btn-mil fs-xs">Clear All</button>
+      </div>
+      <div class="card-body-mil p-0">
+        <div class="table-responsive">
+          <table class="mil-table">
+            <thead><tr><th>Time</th><th>Event</th><th>Unit</th><th>Operator</th><th>Priority</th></tr></thead>
+            <tbody>
+              <tr><td class="fs-xs text-muted-custom">14:33:20</td><td class="fs-xs">Hostile vehicle identified by AI</td><td class="fw-600 fs-xs">R-07</td><td class="fs-xs">Auto – AI Core</td><td><span class="mil-badge red">CRITICAL</span></td></tr>
+              <tr><td class="fs-xs text-muted-custom">14:30:05</td><td class="fs-xs">Mission MSN-003 patrol route updated</td><td class="fw-600 fs-xs">R-19</td><td class="fs-xs">Col. Marcus</td><td><span class="mil-badge blue">INFO</span></td></tr>
+              <tr><td class="fs-xs text-muted-custom">14:28:50</td><td class="fs-xs">R-12 deployed to Sector E4</td><td class="fw-600 fs-xs">R-12</td><td class="fs-xs">Sgt. Reyes</td><td><span class="mil-badge yellow">MEDIUM</span></td></tr>
+              <tr><td class="fs-xs text-muted-custom">14:21:33</td><td class="fs-xs">Comm interference Channel 4 logged</td><td class="fw-600 fs-xs">BASE-2</td><td class="fs-xs">Auto – Sys</td><td><span class="mil-badge yellow">MEDIUM</span></td></tr>
+              <tr><td class="fs-xs text-muted-custom">14:19:41</td><td class="fs-xs">UAV contact logged at B2 airspace</td><td class="fw-600 fs-xs">R-03</td><td class="fs-xs">Auto – AI Core</td><td><span class="mil-badge red">HIGH</span></td></tr>
+              <tr><td class="fs-xs text-muted-custom">14:05:17</td><td class="fs-xs">Battery alert cleared – R-14 charging</td><td class="fw-600 fs-xs">R-14</td><td class="fs-xs">Auto – Sys</td><td><span class="mil-badge green">LOW</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+    <div class="section-card h-100">
+      <div class="card-header-mil">
+        <span class="title"><i class="fa-solid fa-chart-bar"></i> 24h Activity</span>
+      </div>
+      <div class="card-body-mil"><div class="chart-wrap"><canvas id="activityChart"></canvas></div></div>
+    </div>
+  </div>
+</div>
+
+</main><!-- /main-content -->
+
+<!-- ===== FOOTER ===== -->
+<footer id="footer">
+  <div>
+    <span class="footer-brand">MILSURV</span>
+    &nbsp;&bull;&nbsp; Command Center v2.4.1
+    &nbsp;&bull;&nbsp; Classified – Authorized Personnel Only
+  </div>
+  <div class="d-flex align-items-center gap-3 flex-wrap">
+    <span><span class="status-dot online me-1"></span>All Systems Operational</span>
+    <span>&bull;</span>
+    <span>Sector Alpha-9</span>
+    <span>&bull;</span>
+    <span id="footer-clock"></span>
+  </div>
+</footer>
+
+</div><!-- /main-wrapper -->
+
+<!-- ===== SCRIPTS ===== -->
+<!-- Bootstrap 5 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<!-- AOS -->
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<!-- Custom JS -->
+<script src="js/app.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/dashboard.js"></script>
+<script>
+  /* Footer clock */
+  setInterval(() => {
+    const e = document.getElementById('footer-clock');
+    if (e) {
+      const n = new Date();
+      e.textContent = n.toLocaleTimeString('en-US', { hour12: false });
+    }
+  }, 1000);
+</script>
+</body>
+</html>

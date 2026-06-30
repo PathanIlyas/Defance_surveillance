@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reports | MilSurv</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css"/>
+<link rel="stylesheet" href="../css/style.css"/>
+<link rel="stylesheet" href="../css/animation.css"/>
+<link rel="stylesheet" href="../css/dashboard.css"/>
+<link rel="stylesheet" href="../css/responsive.css"/>
+</head>
+<body class="page-transition">
+<div id="loading-overlay"><div class="military-spinner"></div><div class="logo-text">MILSURV</div><div class="sub-text">Loading Reports...</div></div>
+<div id="sidebar-backdrop"></div>
+<div id="emergency-overlay"><div class="emergency-modal"><i class="fa-solid fa-radiation fa-2x text-danger-custom mb-3 blink-alert"></i><h2>EMERGENCY PROTOCOL</h2><p style="color:#ff8888">All units stand by.</p><div class="d-flex gap-3 justify-content-center"><button class="btn-mil-filled" style="background:#ff4d4d">ACTIVATE</button><button class="btn-mil" id="emergency-close">STAND DOWN</button></div></div></div>
+<div id="toast-container"></div>
+
+<nav id="sidebar">
+  <div class="sidebar-brand"><div class="brand-logo"><div class="brand-icon rotate-icon"><i class="fa-solid fa-shield-halved"></i></div><div><div class="brand-name">MilSurv</div><div class="brand-sub">Command Center</div></div></div></div>
+  <div class="sidebar-section-label">Main</div>
+  <a href="../index.html" class="nav-item-mil"><span class="nav-icon"><i class="fa-solid fa-gauge-high"></i></span> Dashboard</a>
+  <a href="surveillance.html" class="nav-item-mil"><span class="nav-icon"><i class="fa-solid fa-video"></i></span> Live Surveillance</a>
+  <a href="robots.html" class="nav-item-mil"><span class="nav-icon"><i class="fa-solid fa-robot"></i></span> Robot Fleet<span class="nav-badge">32</span></a>
+  <div class="sidebar-section-label">Operations</div>
+  <a href="#" class="nav-item-mil"><span class="nav-icon"><i class="fa-solid fa-crosshairs"></i></span> Mission Control</a>
+  <a href="#" class="nav-item-mil"><span class="nav-icon"><i class="fa-solid fa-brain"></i></span> AI Detection</a>
+  <a href="#" class="nav-item-mil"><span class="nav-icon"><i class="fa-solid fa-wave-square"></i></span> Sensor Monitoring</a>
+  <a href="#" class="nav-item-mil"><span class="nav-icon"><i class="fa-solid fa-location-dot"></i></span> GPS Tracking</a>
+  <a href="#" class="nav-item-mil"><span class="nav-icon"><i class="fa-solid fa-tower-broadcast"></i></span> Communication</a>
+  <div class="sidebar-section-label">Reports</div>
+  <a href="alerts.html" class="nav-item-mil"><span class="nav-icon"><i class="fa-solid fa-bell"></i></span> Alerts<span class="nav-badge">7</span></a>
+  <a href="reports.html" class="nav-item-mil active"><span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span> Reports</a>
+  <a href="settings.html" class="nav-item-mil"><span class="nav-icon"><i class="fa-solid fa-gear"></i></span> Settings</a>
+  <div class="sidebar-footer"><div class="user-card"><div class="user-avatar">CM</div><div><div class="user-name">Col. Marcus</div><div class="user-role">Supreme Commander</div></div></div></div>
+</nav>
+
+<header id="topbar">
+  <button class="topbar-menu-btn" id="menu-toggle"><i class="fa-solid fa-bars"></i></button>
+  <div class="search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input type="text" placeholder="Search reports..."/></div>
+  <div id="realtime-clock" class="topbar-clock"></div>
+  <div class="topbar-actions">
+    <div class="robot-status-pill"><span class="status-dot online"></span> 18 Active Units</div>
+    <button class="topbar-btn" id="notif-btn"><i class="fa-solid fa-bell"></i><span class="notif-dot"></span></button>
+    <button class="topbar-btn" id="darkmode-btn"><i class="fa-solid fa-moon"></i></button>
+    <div class="user-pill"><div class="avatar">CM</div><span class="uname">Col. Marcus</span></div>
+    <button class="btn-emergency-top" data-emergency><i class="fa-solid fa-radiation"></i><span>EMERGENCY</span></button>
+  </div>
+</header>
+
+<div id="main-wrapper">
+<main id="main-content">
+
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3" data-aos="fade-down">
+  <div>
+    <h4 class="mb-1 fw-700"><i class="fa-solid fa-chart-line me-2" style="color:var(--primary)"></i>REPORTS &amp; ANALYTICS</h4>
+    <p class="fs-xs mb-0" style="letter-spacing:2px;text-transform:uppercase"><span class="status-dot online me-2"></span>Last Updated: 14:33 UTC &bull; June 30, 2026</p>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <select class="mil-input" style="width:140px;padding:7px 10px;font-size:0.78rem">
+      <option>Last 7 Days</option><option>Last 30 Days</option><option>This Month</option>
+    </select>
+    <button class="btn-mil-filled" onclick="MilToast.show('Report Ready','Full report exported to PDF','success')"><i class="fa-solid fa-file-pdf me-1"></i>Export PDF</button>
+  </div>
+</div>
+
+<!-- KPI cards -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3" data-aos="fade-up"><div class="stat-card float-card"><div class="top-row"><span class="stat-label">Missions Complete</span><div class="icon-box green"><i class="fa-solid fa-flag-checkered"></i></div></div><div class="stat-value" style="color:var(--primary)" data-counter data-target="142">0</div><div class="stat-change"><i class="fa-solid fa-arrow-up up"></i> +12 this week</div></div></div>
+  <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="60"><div class="stat-card float-card danger"><div class="top-row"><span class="stat-label">Threats Neutralized</span><div class="icon-box red"><i class="fa-solid fa-crosshairs"></i></div></div><div class="stat-value" style="color:var(--danger)" data-counter data-target="87">0</div><div class="stat-change"><i class="fa-solid fa-arrow-up up"></i> +7 today</div></div></div>
+  <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="120"><div class="stat-card float-card"><div class="top-row"><span class="stat-label">Robot Hours</span><div class="icon-box blue"><i class="fa-solid fa-clock"></i></div></div><div class="stat-value" data-counter data-target="4820">0</div><div class="stat-change"><i class="fa-solid fa-arrow-up up"></i> +310h this week</div></div></div>
+  <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="180"><div class="stat-card float-card"><div class="top-row"><span class="stat-label">System Uptime</span><div class="icon-box green"><i class="fa-solid fa-server"></i></div></div><div class="stat-value" style="color:var(--primary)">99.9%</div><div class="stat-change"><i class="fa-solid fa-shield-halved" style="color:var(--primary)"></i> All Clear</div></div></div>
+</div>
+
+<!-- Charts row 1 -->
+<div class="row g-3 mb-4">
+  <div class="col-md-8" data-aos="fade-right">
+    <div class="section-card">
+      <div class="card-header-mil"><span class="title"><i class="fa-solid fa-chart-line"></i> Threat & Neutralization Trend</span></div>
+      <div class="card-body-mil"><div class="chart-wrap"><canvas id="reportThreatChart"></canvas></div></div>
+    </div>
+  </div>
+  <div class="col-md-4" data-aos="fade-left">
+    <div class="section-card">
+      <div class="card-header-mil"><span class="title"><i class="fa-solid fa-chart-pie"></i> Mission Types</span></div>
+      <div class="card-body-mil"><div class="chart-wrap"><canvas id="reportMissionChart"></canvas></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts row 2 -->
+<div class="row g-3 mb-4">
+  <div class="col-md-6" data-aos="fade-right">
+    <div class="section-card">
+      <div class="card-header-mil"><span class="title"><i class="fa-solid fa-battery-half"></i> Fleet Battery Trend</span></div>
+      <div class="card-body-mil"><div class="chart-wrap"><canvas id="reportBattChart"></canvas></div></div>
+    </div>
+  </div>
+  <div class="col-md-6" data-aos="fade-left">
+    <div class="section-card">
+      <div class="card-header-mil"><span class="title"><i class="fa-solid fa-robot"></i> Robot Deployment Rate</span></div>
+      <div class="card-body-mil"><div class="chart-wrap"><canvas id="reportDeployChart"></canvas></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Report Table -->
+<div class="section-card mb-4" data-aos="fade-up">
+  <div class="card-header-mil"><span class="title"><i class="fa-solid fa-folder-open"></i> Archived Reports</span></div>
+  <div class="card-body-mil p-0">
+    <div class="table-responsive">
+      <table class="mil-table">
+        <thead><tr><th>Report ID</th><th>Type</th><th>Period</th><th>Generated By</th><th>Size</th><th>Date</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td class="fw-700 text-primary-custom">RPT-0142</td><td class="fs-xs">Threat Summary</td><td class="fs-xs">June 2026</td><td class="fs-xs">Auto – System</td><td class="fs-xs text-muted-custom">2.4 MB</td><td class="fs-xs text-muted-custom">2026-06-30</td><td><button class="btn-mil fs-xs" style="padding:3px 9px" onclick="MilToast.show('Download Started','RPT-0142 downloading','info')"><i class="fa-solid fa-download me-1"></i>Download</button></td></tr>
+          <tr><td class="fw-700 text-primary-custom">RPT-0141</td><td class="fs-xs">Robot Fleet Status</td><td class="fs-xs">June W4 2026</td><td class="fs-xs">Col. Marcus</td><td class="fs-xs text-muted-custom">1.8 MB</td><td class="fs-xs text-muted-custom">2026-06-28</td><td><button class="btn-mil fs-xs" style="padding:3px 9px" onclick="MilToast.show('Download Started','RPT-0141 downloading','info')"><i class="fa-solid fa-download me-1"></i>Download</button></td></tr>
+          <tr><td class="fw-700 text-primary-custom">RPT-0140</td><td class="fs-xs">Mission Analytics</td><td class="fs-xs">June W3 2026</td><td class="fs-xs">Sgt. Reyes</td><td class="fs-xs text-muted-custom">3.1 MB</td><td class="fs-xs text-muted-custom">2026-06-21</td><td><button class="btn-mil fs-xs" style="padding:3px 9px" onclick="MilToast.show('Download Started','RPT-0140 downloading','info')"><i class="fa-solid fa-download me-1"></i>Download</button></td></tr>
+          <tr><td class="fw-700 text-primary-custom">RPT-0139</td><td class="fs-xs">Alert Log – Full</td><td class="fs-xs">June W2 2026</td><td class="fs-xs">Auto – System</td><td class="fs-xs text-muted-custom">0.9 MB</td><td class="fs-xs text-muted-custom">2026-06-14</td><td><button class="btn-mil fs-xs" style="padding:3px 9px" onclick="MilToast.show('Download Started','RPT-0139 downloading','info')"><i class="fa-solid fa-download me-1"></i>Download</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</main>
+<footer id="footer">
+  <div><span class="footer-brand">MILSURV</span> &bull; Reports &amp; Analytics</div>
+  <div class="d-flex align-items-center gap-3"><span><span class="status-dot online me-1"></span>System Nominal</span></div>
+</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/dashboard.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof Chart === 'undefined') return;
+  const gridLine = 'rgba(255,255,255,0.06)';
+  const tick = '#94a3b8';
+  const baseAxes = { grid:{ color:gridLine }, ticks:{ color:tick, font:{ size:11 } } };
+
+  new Chart(document.getElementById('reportThreatChart'), {
+    type:'line',
+    data:{ labels:['Jun 24','Jun 25','Jun 26','Jun 27','Jun 28','Jun 29','Jun 30'],
+      datasets:[
+        { label:'Threats',     data:[14,19,12,25,18,9,17],  borderColor:'#ff4d4d', backgroundColor:'rgba(255,77,77,0.1)',  fill:true, tension:0.4, borderWidth:2.5, pointRadius:4 },
+        { label:'Neutralized', data:[11,16,10,22,15,8,14],  borderColor:'#00ff9d', backgroundColor:'rgba(0,255,157,0.07)', fill:true, tension:0.4, borderWidth:2.5, pointRadius:4 }
+      ]},
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ color:'#fff',font:{size:11},boxWidth:10 } } },
+      scales:{ x:baseAxes, y:baseAxes } }
+  });
+
+  new Chart(document.getElementById('reportMissionChart'), {
+    type:'pie',
+    data:{ labels:['Recon','Strike','Patrol','Rescue','Surveillance'],
+      datasets:[{ data:[30,18,25,12,15], backgroundColor:['#00ff9d','#ff4d4d','#38bdf8','#fbbf24','#a78bfa'], borderColor:'#1e293b', borderWidth:3 }] },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ position:'right', labels:{ color:'#fff',font:{size:11},boxWidth:10 } } } }
+  });
+
+  new Chart(document.getElementById('reportBattChart'), {
+    type:'line',
+    data:{ labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+      datasets:[{ label:'Avg Battery %', data:[82,78,80,69,74,88,87], borderColor:'#fbbf24', backgroundColor:'rgba(251,191,36,0.1)', fill:true, tension:0.4, borderWidth:2 }] },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ color:'#fff',font:{size:11},boxWidth:10 } } },
+      scales:{ x:baseAxes, y:{ ...baseAxes, min:0, max:100 } } }
+  });
+
+  new Chart(document.getElementById('reportDeployChart'), {
+    type:'bar',
+    data:{ labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+      datasets:[{ label:'Deployed', data:[15,18,16,20,17,12,18], backgroundColor:'rgba(56,189,248,0.6)', borderRadius:4 }] },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ color:'#fff',font:{size:11},boxWidth:10 } } },
+      scales:{ x:baseAxes, y:{ ...baseAxes, min:0, max:32 } } }
+  });
+});
+</script>
+</body>
+</html>

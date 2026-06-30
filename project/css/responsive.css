@@ -1,0 +1,102 @@
+/* ============================================
+   RESPONSIVE.CSS - Breakpoint Overrides
+   ============================================ */
+
+/* ---- Tablet (≤ 991px) ---- */
+@media (max-width: 991.98px) {
+
+  #sidebar {
+    transform: translateX(-100%);
+    z-index: 1050;
+  }
+  #sidebar.open {
+    transform: translateX(0);
+    animation: slideInLeft 0.35s ease;
+  }
+
+  #topbar {
+    left: 0;
+  }
+
+  #main-wrapper,
+  #footer {
+    margin-left: 0;
+  }
+
+  .topbar-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .search-wrap { max-width: 240px; }
+
+  .topbar-clock { display: none; }
+
+  /* Sidebar backdrop */
+  #sidebar-backdrop {
+    display: block !important;
+  }
+}
+
+/* ---- Mobile (≤ 767px) ---- */
+@media (max-width: 767.98px) {
+  #main-content { padding: 16px 12px; }
+
+  .search-wrap { display: none; }
+
+  .robot-status-pill { display: none; }
+
+  .btn-emergency-top span { display: none; }
+  .btn-emergency-top { padding: 7px 10px; }
+
+  .user-pill .uname { display: none; }
+
+  .stat-card .stat-value { font-size: 1.6rem; }
+
+  .chart-wrap { height: 180px; }
+
+  .radar-container { width: 170px; height: 170px; }
+
+  .cam-feed { height: 120px; }
+
+  #footer { flex-direction: column; gap: 6px; text-align: center; }
+
+  /* emergency modal */
+  .emergency-modal { padding: 24px 18px; }
+}
+
+/* ---- Small Mobile (≤ 480px) ---- */
+@media (max-width: 479.98px) {
+  :root { --sidebar-width: 100vw; }
+  #main-content { padding: 12px 10px; }
+
+  .stat-card { padding: 14px; }
+
+  .section-card .card-body-mil { padding: 14px; }
+
+  .topbar-actions .topbar-btn:nth-child(n+3) { display: none; }
+}
+
+/* ---- Large Desktop (≥ 1400px) ---- */
+@media (min-width: 1400px) {
+  :root { --sidebar-width: 280px; }
+  #main-content { padding: 28px 32px; }
+}
+
+/* ---- Sidebar Backdrop (hidden by default) ---- */
+#sidebar-backdrop {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 1040;
+  backdrop-filter: blur(2px);
+  animation: fadeIn 0.25s ease;
+}
+
+/* ---- Print ---- */
+@media print {
+  #sidebar, #topbar, #footer, #toast-container, #loading-overlay { display: none !important; }
+  #main-wrapper { margin-left: 0 !important; padding-top: 0 !important; }
+  body { background: #fff !important; color: #000 !important; }
+}

@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MilSurv | Person & Threat Detection Command Center</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css"/>
+<link rel="stylesheet" href="css/style.css"/>
+<link rel="stylesheet" href="css/animation.css"/>
+<link rel="stylesheet" href="css/dashboard.css"/>
+<link rel="stylesheet" href="css/responsive.css"/>
+<link rel="stylesheet" href="css/detection.css"/>
+</head>
+<body class="page-transition">
+
+<!-- LOADING -->
+<div id="loading-overlay">
+  <div class="military-spinner"></div>
+  <div class="logo-text">MILSURV</div>
+  <div class="sub-text">Initializing Detection System...</div>
+</div>
+
+<!-- SIDEBAR BACKDROP -->
+<div id="sidebar-backdrop"></div>
+
+<!-- EMERGENCY OVERLAY -->
+<div id="emergency-overlay">
+  <div class="emergency-modal">
+    <i class="fa-solid fa-radiation fa-2x text-danger-custom mb-3 blink-alert"></i>
+    <h2><i class="fa-solid fa-triangle-exclamation me-2"></i>EMERGENCY PROTOCOL</h2>
+    <p class="mb-4" style="color:#ff8888">Armed/explosive threat detected. All units dispatched. Sector lockdown initiated.</p>
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+      <button class="btn-mil-filled" style="background:#ff4d4d"
+        onclick="MilToast.show('Protocol Activated','All units alerted – Sector locked','danger')">
+        ACTIVATE LOCKDOWN
+      </button>
+      <button class="btn-mil" id="emergency-close">STAND DOWN</button>
+    </div>
+  </div>
+</div>
+
+<!-- THREAT POPUP (auto-fires on explosive detection) -->
+<div id="threat-popup" class="threat-popup-overlay" style="display:none">
+  <div class="threat-popup-box glow-red">
+    <div class="d-flex align-items-center gap-3 mb-3">
+      <i class="fa-solid fa-bomb fa-2x blink-alert" style="color:#ff4d4d"></i>
+      <div>
+        <div style="font-size:1rem;font-weight:800;color:#ff4d4d;letter-spacing:2px">EXPLOSIVE DETECTED</div>
+        <div class="fs-xs text-muted-custom" id="popup-location">Sector E4 – CAM-02</div>
+      </div>
+    </div>
+    <div id="popup-details" class="fs-xs mb-3" style="color:#ff9999;line-height:1.7"></div>
+    <div class="d-flex gap-2">
+      <button class="btn-mil-filled flex-fill" style="background:#ff4d4d;font-size:0.72rem"
+        onclick="document.getElementById('threat-popup').style.display='none';document.getElementById('emergency-overlay').classList.add('active')">
+        <i class="fa-solid fa-siren me-1"></i>TRIGGER ALERT
+      </button>
+      <button class="btn-mil flex-fill" style="font-size:0.72rem"
+        onclick="document.getElementById('threat-popup').style.display='none'">
+        DISMISS
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast-container"></div>
+
+<!-- ===== SIDEBAR ===== -->
+<nav id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-logo">
+      <div class="brand-icon rotate-icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <div>
+        <div class="brand-name">MilSurv</div>
+        <div class="brand-sub">Detection Command</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-section-label">Detection</div>
+  <a href="index.html" class="nav-item-mil active">
+    <span class="nav-icon"><i class="fa-solid fa-gauge-high"></i></span> Overview
+  </a>
+  <a href="#sec-person-feed" class="nav-item-mil" onclick="smoothScroll('sec-person-feed')">
+    <span class="nav-icon"><i class="fa-solid fa-person-circle-question"></i></span> Person Detection
+    <span class="nav-badge" id="sb-unknown-count">3</span>
+  </a>
+  <a href="#sec-threat-feed" class="nav-item-mil" onclick="smoothScroll('sec-threat-feed')">
+    <span class="nav-icon"><i class="fa-solid fa-bomb"></i></span> Threat Detection
+    <span class="nav-badge" id="sb-threat-count" style="background:#ff4d4d">2</span>
+  </a>
+  <a href="#sec-robot-map" class="nav-item-mil" onclick="smoothScroll('sec-robot-map')">
+    <span class="nav-icon"><i class="fa-solid fa-map-location-dot"></i></span> Robot Zone Map
+  </a>
+
+  <div class="sidebar-section-label">Database</div>
+  <a href="#sec-dataset" class="nav-item-mil" onclick="smoothScroll('sec-dataset')">
+    <span class="nav-icon"><i class="fa-solid fa-database"></i></span> Known Persons DB
+  </a>
+  <a href="#sec-alert-log" class="nav-item-mil" onclick="smoothScroll('sec-alert-log')">
+    <span class="nav-icon"><i class="fa-solid fa-bell"></i></span> Detection Log
+    <span class="nav-badge" id="sb-log-count">7</span>
+  </a>
+
+  <div class="sidebar-section-label">System</div>
+  <a href="pages/robots.html" class="nav-item-mil">
+    <span class="nav-icon"><i class="fa-solid fa-robot"></i></span> Robot Fleet
+  </a>
+  <a href="pages/settings.html" class="nav-item-mil">
+    <span class="nav-icon"><i class="fa-solid fa-gear"></i></span> Settings
+  </a>
+
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="user-avatar">CM</div>
+      <div>
+        <div class="user-name">Col. Marcus</div>
+        <div class="user-role">Detection Commander</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== TOPBAR ===== -->
+<header id="topbar">
+  <button class="topbar-menu-btn" id="menu-toggle"><i class="fa-solid fa-bars"></i></button>
+
+  <div class="search-wrap">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" id="person-search" placeholder="Search person ID, name, sector..."/>
+  </div>
+
+  <div id="realtime-clock" class="topbar-clock"></div>
+
+  <div class="topbar-actions">
+    <!-- Live detection indicator -->
+    <div class="robot-status-pill">
+      <span class="status-dot online"></span>
+      <span id="live-detection-count">6 Detections Live</span>
+    </div>
+    <!-- System scan status -->
+    <div class="robot-status-pill" style="border-color:rgba(255,77,77,0.3);background:rgba(255,77,77,0.07);color:#ff4d4d">
+      <span class="status-dot warning"></span>
+      <span id="threat-live-label">2 Active Threats</span>
+    </div>
+
+    <button class="topbar-btn" id="notif-btn" title="Alerts">
+      <i class="fa-solid fa-bell"></i>
+      <span class="notif-dot"></span>
+    </button>
+    <button class="topbar-btn" id="darkmode-btn" title="Toggle Theme">
+      <i class="fa-solid fa-moon"></i>
+    </button>
+    <div class="user-pill">
+      <div class="avatar">CM</div>
+      <span class="uname">Col. Marcus</span>
+    </div>
+    <button class="btn-emergency-top" data-emergency>
+      <i class="fa-solid fa-radiation"></i>
+      <span>EMERGENCY</span>
+    </button>
+  </div>
+</header>
+
+<!-- ===== MAIN WRAPPER ===== -->
+<div id="main-wrapper">
+<main id="main-content">
+
+<!-- PAGE HEADER -->
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3" data-aos="fade-down">
+  <div>
+    <h4 class="mb-1 fw-700" style="letter-spacing:1px">
+      <i class="fa-solid fa-radar me-2" style="color:var(--primary)"></i>
+      DETECTION COMMAND CENTER
+    </h4>
+    <p class="fs-xs mb-0" style="letter-spacing:2px;text-transform:uppercase">
+      <span class="status-dot online me-2"></span>
+      AI Detection Active &bull; 8 Cameras &bull; 6 Robot Zones
+    </p>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <button class="btn-mil" onclick="simulateNewDetection()">
+      <i class="fa-solid fa-rotate me-1"></i>Simulate Detection
+    </button>
+    <button class="btn-mil-filled" onclick="MilToast.show('Report Exported','Detection log saved','success')">
+      <i class="fa-solid fa-file-export me-1"></i>Export Log
+    </button>
+  </div>
+</div>
+
+<!-- ===== TOP STAT CARDS ===== -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-4 col-xl-2" data-aos="fade-up" data-aos-delay="0">
+    <div class="stat-card float-card">
+      <div class="top-row">
+        <span class="stat-label">Total Detected</span>
+        <div class="icon-box blue"><i class="fa-solid fa-users"></i></div>
+      </div>
+      <div class="stat-value" data-counter data-target="47">0</div>
+      <div class="stat-change"><i class="fa-solid fa-arrow-up up"></i> Today</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-xl-2" data-aos="fade-up" data-aos-delay="60">
+    <div class="stat-card float-card">
+      <div class="top-row">
+        <span class="stat-label">Known Persons</span>
+        <div class="icon-box green"><i class="fa-solid fa-user-check"></i></div>
+      </div>
+      <div class="stat-value" style="color:var(--primary)" data-counter data-target="39">0</div>
+      <div class="stat-change"><span class="status-dot online me-1"></span> Identified</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-xl-2" data-aos="fade-up" data-aos-delay="120">
+    <div class="stat-card float-card danger">
+      <div class="top-row">
+        <span class="stat-label">Unknown Persons</span>
+        <div class="icon-box red"><i class="fa-solid fa-user-secret"></i></div>
+      </div>
+      <div class="stat-value blink-slow" style="color:var(--danger)" id="stat-unknown" data-counter data-target="8">0</div>
+      <div class="stat-change"><i class="fa-solid fa-triangle-exclamation" style="color:var(--danger)"></i> Alert</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-xl-2" data-aos="fade-up" data-aos-delay="180">
+    <div class="stat-card float-card danger">
+      <div class="top-row">
+        <span class="stat-label">Explosive Threats</span>
+        <div class="icon-box red"><i class="fa-solid fa-bomb"></i></div>
+      </div>
+      <div class="stat-value blink-slow" style="color:var(--danger)" id="stat-explosive" data-counter data-target="2">0</div>
+      <div class="stat-change"><i class="fa-solid fa-radiation blink-alert" style="color:var(--danger)"></i> Active</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-xl-2" data-aos="fade-up" data-aos-delay="240">
+    <div class="stat-card float-card warning">
+      <div class="top-row">
+        <span class="stat-label">Weapon Detected</span>
+        <div class="icon-box yellow"><i class="fa-solid fa-gun"></i></div>
+      </div>
+      <div class="stat-value" style="color:var(--warning)" data-counter data-target="3">0</div>
+      <div class="stat-change"><i class="fa-solid fa-triangle-exclamation" style="color:var(--warning)"></i> Today</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4 col-xl-2" data-aos="fade-up" data-aos-delay="300">
+    <div class="stat-card float-card">
+      <div class="top-row">
+        <span class="stat-label">Active Robots</span>
+        <div class="icon-box blue"><i class="fa-solid fa-robot"></i></div>
+      </div>
+      <div class="stat-value" style="color:var(--info)" data-counter data-target="18">0</div>
+      <div class="stat-change"><span class="status-dot online me-1"></span> On Patrol</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ROBOT ZONE MAP + RADAR ===== -->
+<div class="row g-3 mb-4" id="sec-robot-map">
+  <div class="col-lg-8" data-aos="fade-right">
+    <div class="section-card h-100">
+      <div class="card-header-mil">
+        <span class="title"><i class="fa-solid fa-map-location-dot"></i> Robot Zone Map – Live Positions</span>
+        <div class="d-flex gap-2 align-items-center">
+          <span class="mil-badge green blink-slow">LIVE GPS</span>
+          <span class="mil-badge blue">6 ZONES</span>
+        </div>
+      </div>
+      <div class="card-body-mil p-0">
+        <!-- SVG-based tactical map -->
+        <div style="position:relative;background:#060f1e;overflow:hidden;min-height:360px" id="zone-map-wrap">
+          <!-- Grid overlay -->
+          <svg id="zone-map-svg" width="100%" height="360" xmlns="http://www.w3.org/2000/svg" style="display:block">
+            <!-- Grid lines -->
+            <defs>
+              <pattern id="mapgrid" width="50" height="50" patternUnits="userSpaceOnUse">
+                <path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(0,255,157,0.06)" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#mapgrid)"/>
+
+            <!-- Zone A – North Gate (top-left) -->
+            <rect x="4%" y="5%" width="22%" height="28%" rx="6"
+              fill="rgba(0,255,157,0.05)" stroke="rgba(0,255,157,0.25)" stroke-width="1.5" stroke-dasharray="6,3"/>
+            <text x="5.5%" y="9%" fill="rgba(0,255,157,0.5)" font-size="9" font-family="monospace" font-weight="700" letter-spacing="2">ZONE-A</text>
+            <text x="5.5%" y="12%" fill="rgba(0,255,157,0.3)" font-size="7" font-family="monospace">NORTH GATE</text>
+
+            <!-- Zone B – East Perimeter -->
+            <rect x="30%" y="5%" width="22%" height="28%" rx="6"
+              fill="rgba(56,189,248,0.04)" stroke="rgba(56,189,248,0.2)" stroke-width="1.5" stroke-dasharray="6,3"/>
+            <text x="31.5%" y="9%" fill="rgba(56,189,248,0.5)" font-size="9" font-family="monospace" font-weight="700" letter-spacing="2">ZONE-B</text>
+            <text x="31.5%" y="12%" fill="rgba(56,189,248,0.3)" font-size="7" font-family="monospace">EAST PERIMETER</text>
+
+            <!-- Zone C – Command Base (top-right) with THREAT indicator -->
+            <rect x="58%" y="5%" width="38%" height="28%" rx="6"
+              fill="rgba(255,77,77,0.06)" stroke="rgba(255,77,77,0.35)" stroke-width="1.5"/>
+            <text x="59.5%" y="9%" fill="rgba(255,77,77,0.7)" font-size="9" font-family="monospace" font-weight="700" letter-spacing="2">ZONE-C ⚠</text>
+            <text x="59.5%" y="12%" fill="rgba(255,77,77,0.4)" font-size="7" font-family="monospace">COMMAND BASE – THREAT</text>
+
+            <!-- Zone D – South Checkpoint -->
+            <rect x="4%" y="40%" width="26%" height="26%" rx="6"
+              fill="rgba(251,191,36,0.04)" stroke="rgba(251,191,36,0.2)" stroke-width="1.5" stroke-dasharray="6,3"/>
+            <text x="5.5%" y="44%" fill="rgba(251,191,36,0.5)" font-size="9" font-family="monospace" font-weight="700" letter-spacing="2">ZONE-D</text>
+            <text x="5.5%" y="47%" fill="rgba(251,191,36,0.3)" font-size="7" font-family="monospace">SOUTH CHECKPOINT</text>
+
+            <!-- Zone E – Vehicle Bay -->
+            <rect x="34%" y="40%" width="26%" height="26%" rx="6"
+              fill="rgba(167,139,250,0.04)" stroke="rgba(167,139,250,0.2)" stroke-width="1.5" stroke-dasharray="6,3"/>
+            <text x="35.5%" y="44%" fill="rgba(167,139,250,0.5)" font-size="9" font-family="monospace" font-weight="700" letter-spacing="2">ZONE-E</text>
+            <text x="35.5%" y="47%" fill="rgba(167,139,250,0.3)" font-size="7" font-family="monospace">VEHICLE BAY</text>
+
+            <!-- Zone F – Outer Perimeter -->
+            <rect x="64%" y="40%" width="32%" height="26%" rx="6"
+              fill="rgba(0,255,157,0.03)" stroke="rgba(0,255,157,0.15)" stroke-width="1.5" stroke-dasharray="6,3"/>
+            <text x="65.5%" y="44%" fill="rgba(0,255,157,0.4)" font-size="9" font-family="monospace" font-weight="700" letter-spacing="2">ZONE-F</text>
+            <text x="65.5%" y="47%" fill="rgba(0,255,157,0.25)" font-size="7" font-family="monospace">OUTER PERIMETER</text>
+
+            <!-- Connecting paths between zones -->
+            <line x1="26%" y1="19%" x2="30%" y2="19%" stroke="rgba(0,255,157,0.15)" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="52%" y1="19%" x2="58%" y2="19%" stroke="rgba(0,255,157,0.15)" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="15%" y1="33%" x2="15%" y2="40%" stroke="rgba(0,255,157,0.12)" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="47%" y1="33%" x2="47%" y2="40%" stroke="rgba(0,255,157,0.12)" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="30%" y1="52%" x2="34%" y2="52%" stroke="rgba(0,255,157,0.12)" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="60%" y1="52%" x2="64%" y2="52%" stroke="rgba(0,255,157,0.12)" stroke-width="1" stroke-dasharray="4,3"/>
+
+            <!-- Robot dots are injected by JS below -->
+            <g id="robot-dots"></g>
+            <!-- Person detection markers injected by JS -->
+            <g id="person-markers"></g>
+          </svg>
+
+          <!-- Map corner labels -->
+          <span class="map-overlay-label tl">34.0522°N 118.2437°W</span>
+          <span class="map-overlay-label tr">SECTOR ALPHA-9</span>
+          <span class="map-overlay-label bl" id="map-footer-l">18 UNITS ACTIVE</span>
+          <span class="map-overlay-label br" id="map-time"></span>
+        </div>
+        <!-- Map Legend -->
+        <div class="d-flex gap-3 p-3 flex-wrap" style="border-top:1px solid var(--border)">
+          <span class="fs-xs d-flex align-items-center gap-1" style="color:var(--text-secondary)">
+            <span style="width:10px;height:10px;border-radius:50%;background:#00ff9d;display:inline-block"></span> Robot – Active
+          </span>
+          <span class="fs-xs d-flex align-items-center gap-1" style="color:var(--text-secondary)">
+            <span style="width:10px;height:10px;border-radius:50%;background:#fbbf24;display:inline-block"></span> Robot – Standby
+          </span>
+          <span class="fs-xs d-flex align-items-center gap-1" style="color:var(--text-secondary)">
+            <span style="width:10px;height:4px;border-radius:2px;background:#00ff9d;display:inline-block"></span> Known Person
+          </span>
+          <span class="fs-xs d-flex align-items-center gap-1" style="color:var(--text-secondary)">
+            <span style="width:10px;height:4px;border-radius:2px;background:#ff4d4d;display:inline-block"></span> Unknown / Threat
+          </span>
+          <span class="fs-xs ms-auto" style="color:var(--primary)">
+            <i class="fa-solid fa-robot me-1"></i><span id="map-active-count">18</span> Robots on Map
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Zone Status + Radar -->
+  <div class="col-lg-4" data-aos="fade-left">
+    <!-- Zone Status -->
+    <div class="section-card mb-3">
+      <div class="card-header-mil">
+        <span class="title"><i class="fa-solid fa-layer-group"></i> Zone Status</span>
+      </div>
+      <div class="card-body-mil p-0">
+        <div id="zone-status-list">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+    </div>
+    <!-- Radar -->
+    <div class="section-card">
+      <div class="card-header-mil">
+        <span class="title"><i class="fa-solid fa-circle-dot"></i> Radar</span>
+        <span class="mil-badge green blink-slow">SCANNING</span>
+      </div>
+      <div class="card-body-mil d-flex flex-column align-items-center gap-2">
+        <div class="radar-container" style="width:180px;height:180px">
+          <div class="radar-base">
+            <div class="radar-circle"></div><div class="radar-circle"></div>
+            <div class="radar-circle"></div><div class="radar-circle"></div>
+            <div class="radar-line-h"></div><div class="radar-line-v"></div>
+            <div class="radar-sweep"></div>
+            <div class="radar-dot" style="top:30%;left:60%"></div>
+            <div class="radar-dot" style="top:62%;left:25%;animation-delay:0.7s"></div>
+            <div class="radar-dot" style="top:45%;left:70%;animation-delay:1.2s"></div>
+            <div class="radar-ping" style="top:29%;left:59%"></div>
+          </div>
+        </div>
+        <div class="text-center">
+          <div class="fs-xs" style="letter-spacing:2px;color:var(--text-secondary)">RANGE: 50KM &bull; FREQ: 9.4GHz</div>
+          <div class="fs-xs mt-1" style="color:var(--primary)"><span id="radar-contacts">3</span> CONTACTS DETECTED</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PERSON DETECTION LIVE FEED ===== -->
+<div id="sec-person-feed" class="section-card mb-4" data-aos="fade-up">
+  <div class="card-header-mil">
+    <span class="title"><i class="fa-solid fa-person-circle-question"></i> Live Person Detection Feed</span>
+    <div class="d-flex gap-2 align-items-center flex-wrap">
+      <span class="mil-badge red blink-slow" id="unknown-badge">3 UNKNOWN</span>
+      <span class="mil-badge green" id="known-badge">4 KNOWN</span>
+      <div class="d-flex gap-1 ms-2">
+        <button class="btn-mil fs-xs" style="padding:3px 10px" onclick="filterDetections('all')" id="filt-all">All</button>
+        <button class="btn-mil fs-xs" style="padding:3px 10px" onclick="filterDetections('unknown')" id="filt-unknown">Unknown</button>
+        <button class="btn-mil fs-xs" style="padding:3px 10px" onclick="filterDetections('threat')" id="filt-threat">Threats</button>
+      </div>
+    </div>
+  </div>
+  <div class="card-body-mil">
+    <div class="row g-3" id="detection-feed-grid">
+      <!-- Cards injected by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ===== EXPLOSIVE / WEAPON THREAT CARDS ===== -->
+<div id="sec-threat-feed" class="section-card mb-4" data-aos="fade-up">
+  <div class="card-header-mil">
+    <span class="title"><i class="fa-solid fa-bomb"></i> Explosive &amp; Weapon Threat Detection</span>
+    <span class="mil-badge red blink-alert" id="explosive-badge">2 ACTIVE THREATS</span>
+  </div>
+  <div class="card-body-mil">
+    <div class="row g-3" id="threat-feed-grid">
+      <!-- Injected by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ===== KNOWN PERSONS DATABASE ===== -->
+<div id="sec-dataset" class="section-card mb-4" data-aos="fade-up">
+  <div class="card-header-mil">
+    <span class="title"><i class="fa-solid fa-database"></i> Known Persons Database</span>
+    <div class="d-flex gap-2 align-items-center flex-wrap">
+      <input type="text" id="db-search" class="mil-input" style="width:180px;padding:5px 10px;font-size:0.78rem"
+        placeholder="Search database..." oninput="searchDatabase(this.value)"/>
+      <span class="mil-badge blue" id="db-count-badge">12 Records</span>
+      <button class="btn-mil fs-xs" onclick="addPersonModal()"><i class="fa-solid fa-plus me-1"></i>Add Person</button>
+    </div>
+  </div>
+  <div class="card-body-mil p-0">
+    <div class="table-responsive">
+      <table class="mil-table" id="db-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Avatar</th>
+            <th>Name</th>
+            <th>Role / Clearance</th>
+            <th>Unit / Org</th>
+            <th>Last Detected</th>
+            <th>Sector</th>
+            <th>Matches Today</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="db-tbody">
+          <!-- Injected by JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DETECTION LOG ===== -->
+<div id="sec-alert-log" class="row g-3 mb-4">
+  <!-- Timeline -->
+  <div class="col-lg-5" data-aos="fade-right">
+    <div class="section-card h-100">
+      <div class="card-header-mil">
+        <span class="title"><i class="fa-solid fa-clock-rotate-left"></i> Detection Timeline</span>
+        <span class="mil-badge red blink-slow">LIVE</span>
+      </div>
+      <div class="card-body-mil" style="max-height:420px;overflow-y:auto">
+        <div class="alert-timeline" id="alert-timeline">
+          <!-- injected by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Full log table -->
+  <div class="col-lg-7" data-aos="fade-left">
+    <div class="section-card h-100">
+      <div class="card-header-mil">
+        <span class="title"><i class="fa-solid fa-list-ul"></i> Full Detection Log</span>
+        <button class="btn-mil fs-xs" onclick="MilToast.show('Log Exported','Detection log saved to CSV','success')">
+          <i class="fa-solid fa-download me-1"></i>Export CSV
+        </button>
+      </div>
+      <div class="card-body-mil p-0" style="max-height:420px;overflow-y:auto">
+        <table class="mil-table" id="log-table">
+          <thead>
+            <tr>
+              <th>Time</th><th>Camera</th><th>Person</th>
+              <th>Match</th><th>Threat</th><th>Zone</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="log-tbody">
+            <!-- injected by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main><!-- /main-content -->
+
+<!-- FOOTER -->
+<footer id="footer">
+  <div>
+    <span class="footer-brand">MILSURV</span>
+    &bull; Person &amp; Threat Detection v2.5.0
+    &bull; Classified – Authorized Personnel Only
+  </div>
+  <div class="d-flex align-items-center gap-3 flex-wrap">
+    <span><span class="status-dot online me-1"></span>AI Engine Active</span>
+    <span>&bull;</span>
+    <span id="footer-clock"></span>
+  </div>
+</footer>
+</div><!-- /main-wrapper -->
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script src="js/app.js"></script>
+<script src="js/detection.js"></script>
+<script>
+  setInterval(() => {
+    const e = document.getElementById('footer-clock');
+    if (e) e.textContent = new Date().toLocaleTimeString('en-US',{hour12:false});
+  }, 1000);
+  function smoothScroll(id) {
+    const el = document.getElementById(id);
+    if (el) { setTimeout(() => el.scrollIntoView({behavior:'smooth', block:'start'}), 100); }
+    return false;
+  }
+</script>
+</body>
+</html>
